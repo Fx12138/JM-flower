@@ -1,7 +1,9 @@
 <template>
   <div class="content">
     <div class="home-title">游戏大厅</div>
-    <button class="logout-button" @click="logout">退出登录</button>
+    <button class="logout-button btn btn-primary" @click="logout">
+      退出登录
+    </button>
 
     <room-list class="room-list" :rooms="roomList"></room-list>
   </div>

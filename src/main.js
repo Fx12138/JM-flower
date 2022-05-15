@@ -5,6 +5,15 @@ import store from './store'
 
 import VueSocketIO from 'vue-socket.io'
 import socketio from 'socket.io-client';
+
+
+// 引入jQuery
+import $ from 'jquery'
+// import 'bootstrap'
+// 引用bootstrap
+import 'assets/bootstrap-3.4.1-dist/css/bootstrap.css'
+import 'assets/bootstrap-3.4.1-dist/js/bootstrap.js'
+Vue.prototype.$ = $
 Vue.use(new VueSocketIO({
   debug: true,
   // connection: 'http://212.129.235.112:3000/',

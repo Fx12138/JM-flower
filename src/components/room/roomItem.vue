@@ -9,11 +9,13 @@
       />
     </div>
     <div class="room-info-box">
-      <span class="roomName">{{ room.roomName }}</span>
-      <span class="roomId">房间ID:{{ room.roomId }}</span>
+      <div class="roomName">{{ room.roomName }}</div>
+      <div class="roomId">房间ID:{{ room.roomId }}</div>
     </div>
 
-    <button class="option-btn" type="default" @click="inRoom">进入房间</button>
+    <button class="inroom-button" type="default" @click="inRoom">
+      进入房间
+    </button>
   </div>
 </template>
 <script>
@@ -75,8 +77,7 @@ export default {
   .room-info-box {
     margin-left: (15rem / @baseFont);
     width: (300rem / @baseFont);
-    display: flex;
-    flex-wrap: wrap;
+
     .roomName {
       font-size: (20rem / @baseFont);
     }
@@ -85,13 +86,14 @@ export default {
       font-size: (15rem / @baseFont);
     }
   }
-  .option-btn {
+  .inroom-button {
     margin-left: auto;
     border: 0;
-    width: (80rem / @baseFont);
+    // width: (80rem / @baseFont);
     height: (40rem / @baseFont);
     border-radius: (17rem / @baseFont);
     background-color: #5a9af0;
+    font-size: (15rem / @baseFont);
   }
 }
 </style>

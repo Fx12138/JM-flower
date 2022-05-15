@@ -1,6 +1,23 @@
 import { localReq } from "./request";
 
 /**
+ * 创建房间
+ * @param {*} roomName 
+ * @param {*} user 
+ * @returns 
+ */
+export function createRoom(roomName, user) {
+    return localReq({
+        url: '/flowerRoom/createRoom',
+        method: 'post',
+        data: {
+            roomName,
+            user
+        }
+    })
+}
+
+/**
  * 进入房间
  * @param {房间id} roomId 
  * @param {用户信息} user 

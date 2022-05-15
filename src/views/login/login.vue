@@ -5,6 +5,7 @@
       <input
         type="text"
         v-model="ruleForm.username"
+        class="form-control"
         placeholder="请输入用户名"
       />
     </div>
@@ -13,12 +14,15 @@
       <input
         type="password"
         v-model="ruleForm.password"
+        class="form-control"
         placeholder="请输入用户名"
       />
     </div>
-    <div>
-      <button type="primary" @click="login(ruleForm)">登录</button>
-      <button type="primary">注册</button>
+    <div class="log-option-button">
+      <button type="primary" @click="login(ruleForm)" class="btn btn-primary">
+        登录
+      </button>
+      <button type="primary" class="btn btn-primary">注册</button>
     </div>
   </div>
 </template>
@@ -87,11 +91,12 @@ body {
     display: flex;
     justify-content: center;
     span {
-      width: (80rem / @baseFont);
+      width: (150rem / @baseFont);
       font-size: (20rem / @baseFont);
       text-align: justify;
       text-align-last: justify;
       margin-right: (20rem / @baseFont);
+      color: aliceblue;
     }
     margin: (20rem / @baseFont);
   }
@@ -100,12 +105,21 @@ body {
     display: flex;
     justify-content: center;
     span {
-      width: (80rem / @baseFont);
+      width: (150rem / @baseFont);
       font-size: (20rem / @baseFont);
       text-align: justify;
       text-align-last: justify;
       margin-right: (20rem / @baseFont);
+      color: aliceblue;
     }
+  }
+}
+.log-option-button {
+  margin-top: (20rem / @baseFont);
+  button {
+    margin: (20rem / @baseFont);
+    width: (100rem / @baseFont);
+    font-weight: 300;
   }
 }
 </style>
