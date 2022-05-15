@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h2>show hands</h2>
+    <h2 class="title-text">show hands</h2>
     <div class="room-number">
       <input
         id="roomNumber"
@@ -58,12 +58,13 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
+@baseFont: 50;
 body {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,18 +77,23 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  .title-text {
+    font-size: (70rem / @baseFont);
+    margin: 0;
+  }
 }
 .room-number {
-  height: 50px;
-  width: 200px;
+  height: (50rem / @baseFont);
+  width: (230rem / @baseFont);
+  margin-top: (20rem / @baseFont);
   position: relative;
-  border-radius: 20px;
+  border-radius: (50rem / @baseFont);
   overflow: hidden;
 }
 .room-number input {
   display: flex;
-  height: 50px;
-  width: 200px;
+  height: (50rem / @baseFont);
+  width: (230rem / @baseFont);
   text-align: center;
   padding: 0;
   margin: 0;
@@ -99,7 +105,7 @@ body {
   content: "";
   position: absolute;
   left: 0;
-  height: 3px;
+  height: (2rem / @baseFont);
   bottom: 0;
   width: 100%;
   background-color: #00ffff;
@@ -114,8 +120,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: (10rem / @baseFont);
 }
 .option-btn {
-  margin: 20px 10px;
+  margin: (10rem / @baseFont) (10rem / @baseFont);
 }
 </style>

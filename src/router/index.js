@@ -4,7 +4,6 @@ import { getCookie } from '../utils/cookieUtil'
 
 const Home = () => import('@/views/index/index')
 const Login = () => import('@/views/login/login')
-const LandlordRoom = () => import('@/views/landlord/room')
 const FlowerRoom = () => import('@/views/flower/room')
 
 Vue.use(Router)
@@ -21,10 +20,6 @@ const routes = [
   {
     path: '/home',
     component: Home,
-  },
-  {
-    path: '/landlordRoom',
-    component: LandlordRoom
   },
   {
     path: '/flowerRoom/:roomId',

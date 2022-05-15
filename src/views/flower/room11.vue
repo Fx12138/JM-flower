@@ -18,331 +18,32 @@
       </button>
     </div>
 
-    <div class="user0-box" :class="flowerUserList[0].liveStatus ? '' : 'lose'">
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[0].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[0].avatar"
-          :class="flowerUserList[0].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow0"></div>
-
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[0].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[0].coin }}</span>
-          </div>
-        </div>
-
-        <button
-          v-if="
-            flowerUserList[0].username !== this.userInfo.username &&
-            flowerUserList[0].liveStatus &&
-            flowerUserList[0].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[0])
-          "
-        >
-          比牌
-        </button>
-      </div>
-      <div class="card-box">
-        <div
-          v-if="
-            flowerUserList[0].cardStatus &&
-            userInfo.username == flowerUserList[0].username
-          "
-          class="user-card"
-        >
-          <div v-for="(card, index) in flowerUserList[0].card" :key="index">
-            <img class="card" :src="card.path" alt="" />
-          </div>
-        </div>
-        <div v-else>
-          <div
-            class="nosee"
-            :class="flowerUserList[0].liveStatus ? '' : 'lose'"
-          >
-            <div v-if="flowerUserList[0].cardStatus" class="see-status">
-              已看牌
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="user1-box" :class="flowerUserList[1].liveStatus ? '' : 'lose'">
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[1].avatar"
-          :class="flowerUserList[1].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow1"></div>
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[1].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[1].coin }}</span>
-          </div>
-        </div>
-        <button
-          v-if="
-            flowerUserList[1].username !== userInfo.username &&
-            flowerUserList[1].liveStatus &&
-            flowerUserList[1].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[1])
-          "
-        >
-          比牌
-        </button>
-      </div>
-      <div
-        v-if="
-          flowerUserList[1].cardStatus &&
-          userInfo.username == flowerUserList[1].username
-        "
-        class="user-card"
-      >
-        <div v-for="(card, index) in flowerUserList[1].card" :key="index">
-          <img class="card" :src="card.path" alt="" />
-        </div>
-      </div>
-      <div v-else>
-        <div class="nosee" :class="flowerUserList[1].liveStatus ? '' : 'lose'">
-          <div v-if="flowerUserList[1].cardStatus" class="see-status">
-            已看牌
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="user2-box" :class="flowerUserList[2].liveStatus ? '' : 'lose'">
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[2].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[2].avatar"
-          :class="flowerUserList[2].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow2"></div>
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[2].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[2].coin }}</span>
-          </div>
-        </div>
-        <button
-          v-if="
-            flowerUserList[2].username !== userInfo.username &&
-            flowerUserList[2].liveStatus &&
-            flowerUserList[2].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[2])
-          "
-        >
-          比牌
-        </button>
-      </div>
-      <div
-        v-if="
-          flowerUserList[2].cardStatus &&
-          userInfo.username == flowerUserList[2].username
-        "
-        class="user-card"
-      >
-        <div v-for="(card, index) in flowerUserList[2].card" :key="index">
-          <img class="card" :src="card.path" alt="" />
-        </div>
-      </div>
-      <div v-else>
-        <div class="nosee" :class="flowerUserList[2].liveStatus ? '' : 'lose'">
-          <div v-if="flowerUserList[2].cardStatus" class="see-status">
-            已看牌
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="user3-box" :class="flowerUserList[3].liveStatus ? '' : 'lose'">
-      <div
-        v-if="
-          flowerUserList[3].cardStatus &&
-          userInfo.username == flowerUserList[3].username
-        "
-        class="user-card"
-      >
-        <div v-for="(card, index) in flowerUserList[3].card" :key="index">
-          <img class="card" :src="card.path" alt="" />
-        </div>
-      </div>
-      <div v-else>
-        <div class="nosee" :class="flowerUserList[3].liveStatus ? '' : 'lose'">
-          <div v-if="flowerUserList[3].cardStatus" class="see-status">
-            已看牌
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[3].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[3].avatar"
-          :class="flowerUserList[3].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow3"></div>
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[3].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[3].coin }}</span>
-          </div>
-        </div>
-        <button
-          v-if="
-            flowerUserList[3].username !== userInfo.username &&
-            flowerUserList[3].liveStatus &&
-            flowerUserList[3].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[3])
-          "
-        >
-          比牌
-        </button>
-      </div>
-    </div>
-
-    <div class="user4-box" :class="flowerUserList[4].liveStatus ? '' : 'lose'">
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[4].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[4].avatar"
-          :class="flowerUserList[4].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow4"></div>
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[4].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[4].coin }}</span>
-          </div>
-        </div>
-        <button
-          v-if="
-            flowerUserList[4].username !== userInfo.username &&
-            flowerUserList[4].liveStatus &&
-            flowerUserList[4].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[4])
-          "
-        >
-          比牌
-        </button>
-      </div>
-      <div
-        v-if="
-          flowerUserList[4].cardStatus &&
-          userInfo.username == flowerUserList[4].username
-        "
-        class="user-card"
-      >
-        <div v-for="(card, index) in flowerUserList[4].card" :key="index">
-          <img class="card" :src="card.path" alt="" />
-        </div>
-      </div>
-      <div v-else>
-        <div class="nosee" :class="flowerUserList[4].liveStatus ? '' : 'lose'">
-          <div v-if="flowerUserList[4].cardStatus" class="see-status">
-            已看牌
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="user5-box" :class="flowerUserList[5].liveStatus ? '' : 'lose'">
-      <div
-        class="userAvatar"
-        :class="roomInfo.activeUser.id == flowerUserList[5].id ? 'active' : ''"
-      >
-        <img
-          :src="flowerUserList[5].avatar"
-          :class="flowerUserList[1].liveStatus ? '' : 'lose'"
-          class="userAvatarImg"
-          alt=""
-        />
-        <div class="coin-follow coin-follow5"></div>
-        <div class="user-info">
-          <span class="username">{{ flowerUserList[5].username }}</span>
-          <div class="user-coin-box">
-            <img class="coin-pocket" src="@/assets/coin-pocket.png" alt="" />
-            <span class="user-coin">{{ flowerUserList[5].coin }}</span>
-          </div>
-        </div>
-        <button
-          v-if="
-            flowerUserList[5].username !== userInfo.username &&
-            flowerUserList[5].liveStatus &&
-            flowerUserList[5].cardStatus &&
-            roomInfo.status == 2
-          "
-          @click="
-            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[5])
-          "
-        >
-          比牌
-        </button>
-      </div>
-      <div
-        v-if="
-          flowerUserList[5].cardStatus &&
-          userInfo.username == flowerUserList[5].username
-        "
-        class="user-card"
-      >
-        <div v-for="(card, index) in flowerUserList[5].card" :key="index">
-          <img class="card" :src="card.path" alt="" />
-        </div>
-      </div>
-      <div v-else>
-        <div class="nosee" :class="flowerUserList[5].liveStatus ? '' : 'lose'">
-          <div v-if="flowerUserList[5].cardStatus" class="see-status">
-            已看牌
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- 下面这个永远为当前用户 -->
+    <flower-user
+      class="user0-box"
+      :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
+      :user="user0"
+    ></flower-user>
+    <flower-user
+      class="user1-box"
+      :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
+      :user="flowerUserList[1]"
+    ></flower-user>
+    <flower-user
+      class="user2-box"
+      :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
+      :user="flowerUserList[2]"
+    ></flower-user>
+    <flower-user
+      class="user3-box"
+      :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
+      :user="flowerUserList[3]"
+    ></flower-user>
+    <flower-user
+      class="user4-box"
+      :class="roomInfo.activeUser.id == flowerUserList[1].id ? 'active' : ''"
+      :user="flowerUserList[4]"
+    ></flower-user>
 
     <div
       class="operate"
@@ -377,12 +78,13 @@
     </div>
 
     <!-- 显示比牌结果框 -->
-    <div v-if="winner" class="result">{{ winner.username }}赢了</div>
-    <div v-if="messageTip" class="result">{{ messageTip }}</div>
+    <!-- <div v-if="winner" class="result">{{ winner.username }}赢了</div>
+    <div v-if="messageTip" class="result">{{ messageTip }}</div> -->
   </div>
 </template>
 
 <script>
+import FlowerUser from "@/components/flowerUser.vue";
 import { getCookie, setCookie, delCookie } from "../../utils/cookieUtil";
 import { judge, contrastSameType } from "../../utils/business/judge";
 import { randomNum } from "../../utils/otherUtils";
@@ -391,8 +93,9 @@ import {
   shufflePoker,
   orderPoker,
 } from "../../utils/business/pocker";
-import { sendOtherCards } from "../../network/flower";
+import { sendOtherCards, sendCard } from "../../network/flower";
 import { getFlowerUserList, outFlowerRoom } from "../../network/room";
+
 export default {
   data() {
     return {
@@ -408,7 +111,6 @@ export default {
       inOutMes: null,
       messageTip: null,
       userNumber: 0,
-      aliveNumber: 0,
       roomInfo: {
         status: 0, //开局状态,0未开局,1已开局,2比牌等待选择
         roomId: null,
@@ -416,6 +118,7 @@ export default {
           id: null,
           username: "",
         },
+        aliveNumber: 0,
         lastWinner: {
           id: 0,
         },
@@ -424,6 +127,13 @@ export default {
         bottomCoin: 1,
       },
       winner: null,
+      user0: {
+        id: 0,
+        avatar:
+          "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+        username: "等待玩家",
+        coin: 0,
+      },
       flowerUserList: [
         {
           id: 0,
@@ -507,17 +217,13 @@ export default {
     },
   },
   created() {
-    // window.addEventListener("beforeunload", (e) => this.beforeunloadHandler(e));
     //获取当前用户信息
     this.getUserInfo();
-    console.log(this.roomId);
     let sendData = {
       userInfo: this.userInfo,
       roomId: this.roomId,
     };
     this.$socket.emit("toFlowerRoom", sendData);
-    // this.distributeSet(this.flowerUserList);
-    this.pokers = creatPoker();
   },
   mounted() {
     window.onbeforeunload = function (e) {
@@ -545,6 +251,9 @@ export default {
     window.removeEventListener("beforeunload", (e) =>
       this.beforeunloadHandler(e)
     );
+  },
+  components: {
+    FlowerUser,
   },
   methods: {
     //初始化一些数据
@@ -612,8 +321,6 @@ export default {
 
     //发牌
     beginGame(pokers) {
-      var that = this;
-
       //房间内人数
       this.initData();
       //首局随机选出先手玩家
@@ -622,9 +329,21 @@ export default {
       this.roomInfo.activeUser.username =
         this.flowerUserList[activeUserId].username;
       this.$socket.emit("activeUser", this.roomInfo.activeUser);
-      this.$socket.emit("sendPokers", pokers);
-      // this.$socket.emit("sendPokers", this.userNumber);
-      this.userNumber = 0;
+      // this.$socket.emit("sendPokers", pokers);
+      this.$socket.emit("sendPokers", {
+        username: this.userInfo.username,
+        roomId: this.roomInfo.roomId,
+        pockers: creatPoker(),
+      });
+      // sendCard(this.userInfo.username, this.roomInfo.roomId, creatPoker()).then(
+      //   (res) => {
+      //     if (res.data.code == 200) {
+      //       this.user0.card = res.data.data;
+      //     } else {
+      //       alert(res.data.msg);
+      //     }
+      //   }
+      // );
     },
     //跟注
     follow(coinNum) {
@@ -825,11 +544,17 @@ export default {
       //   this.$socket.emit("outFlowerRoom", sendData);
       // });
     },
+    distributeSet(currentId, setId, userNumber) {
+      if (currentId + setId > userNumber) {
+        return (currentId + setId) % userNumber;
+      } else {
+        return currentId + setId;
+      }
+    },
   },
   sockets: {
     //用户进入斗地主房间
     inFlowerRoom: function (flowerUserList) {
-      console.log(flowerUserList);
       if (flowerUserList.code == 200) {
         this.inOut = true;
         let newUsername =
@@ -844,6 +569,20 @@ export default {
         }
       } else {
         alert(flowerUserList.msg);
+      }
+
+      // 座位0永远是当前用户
+      this.user0 = flowerUserList.data.filter((user) => {
+        return user.username == this.userInfo.username;
+      })[0];
+      for (let i = 1; i < flowerUserList.data.length; i++) {
+        let user = flowerUserList.data.filter((user) => {
+          return (
+            user.id ==
+            this.distributeSet(this.user0.id, i, flowerUserList.data.length)
+          );
+        })[0];
+        this.flowerUserList[i] = user ? user : this.flowerUserList[i];
       }
     },
     //用户退出炸金花房间
@@ -864,44 +603,19 @@ export default {
     },
 
     //发牌
-    sendPokers(pokers) {
-      var that = this;
+    sendPokers(flowerUserList) {
       //计算房间内玩家的数量
-      console.log(this.userNumber);
       this.userNumber = 0;
-      that.flowerUserList.forEach((user) => {
+      this.flowerUserList.forEach((user) => {
         if (user.username != "等待玩家") {
-          that.userNumber += 1;
+          this.userNumber += 1;
         }
       });
       this.aliveNumber = this.userNumber;
-      var lastCards = 52;
-      lastCards = lastCards - that.userNumber * 3;
-      console.log(that.flowerUserList);
-      while (pokers.length > lastCards) {
-        //只要牌堆的牌大于应该剩余牌数，玩家继续摸牌
-        for (let i = 0; i < that.userNumber; i++) {
-          //玩家3人轮流摸牌
-          that.flowerUserList[i].card.push(pokers.pop());
-        }
-      }
+      this.user0.card = flowerUserList.filter((user) => {
+        return user.username == this.user0.username;
+      })[0].card;
       this.roomInfo.status = 1;
-      this.flowerUserList.forEach((user) => {
-        if (user.username != "等待玩家") {
-          user.liveStatus = 1;
-          user.cardStatus = 0;
-          user.cardType = judge(user.card);
-          console.log(
-            user.username,
-            "牌" +
-              user.card[0].name +
-              user.card[1].name +
-              user.card[2].name +
-              "牌型为" +
-              user.cardType
-          );
-        }
-      });
     },
 
     //activeUser
@@ -960,17 +674,14 @@ export default {
           transY = randomNum(100, 200);
       }
       img.src = "/static/coin_20.jpg";
-      img.style.width = "1rem";
-      img.style.height = "1rem";
       followUserImg[0].appendChild(img); //放到指定的id里
       setTimeout(() => {
-        img.style.width = "1rem";
-        img.style.height = "1rem";
         img.style.transition = "1" + "s";
         img.style.transform = `scale(.5) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
         console.log("偏移量x", activeId);
         console.log("偏移量x", transX);
         console.log("偏移量y", transY);
+        // img.style.transform = `scale(.5) translate(800px,1233px)`;
       }, 20);
       // this.$nextTick(function () {
       //   img.style.transform = `scale(.5) translate(${transX}px,${transY}px) rotate(${rotateAngle}deg) `;
@@ -1078,16 +789,6 @@ export default {
         this.flowerUserList[i].liveStatus = 1; //设置存活
         this.flowerUserList[i].card = [];
         this.flowerUserList[i].card.push(...flowerUserList[i].card); //设置新一局的牌
-        this.flowerUserList[i].cardType = judge(this.flowerUserList[i].card);
-        console.log(
-          this.flowerUserList[i].username,
-          "牌" +
-            this.flowerUserList[i].card[0].name +
-            this.flowerUserList[i].card[1].name +
-            this.flowerUserList[i].card[2].name +
-            "牌型为" +
-            this.flowerUserList[i].cardType
-        );
       }
       //设置上一局的赢家的下家为先手
       let activeUser =
@@ -1111,27 +812,32 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import "../../assets/css/common.css";
 @baseFont: 50;
 body {
   padding: 0;
   margin: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url("../../assets/bg.jpeg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  // background-image: url("../../assets/bg.jpeg");
+  // background-repeat: no-repeat;
+  // background-size: 100% 100%;
 }
+
 .outer {
   width: 100%;
   height: 100%;
 }
+
 .sendcard {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+//用户进出提示
 .inout-msg {
   font-size: (20rem / @baseFont);
   position: absolute;
@@ -1139,6 +845,8 @@ body {
   top: 40%;
   transform: translate(-50%, 0);
 }
+
+// 左上角游戏状态显示框
 .message {
   width: (150rem / @baseFont);
   height: (110rem / @baseFont);
@@ -1151,93 +859,18 @@ body {
   margin: auto;
   font-size: (10rem / @baseFont);
 }
-.userAvatar {
-  width: (90rem / @baseFont);
-  height: (100rem / @baseFont);
-  display: flex;
-  flex-wrap: wrap;
-}
-.userAvatarImg {
-  border-radius: 50%;
-  width: (55rem / @baseFont);
-  height: (55rem / @baseFont);
-  margin: 0 auto;
-}
-.user-info {
-  width: (90rem / @baseFont);
-  height: (60rem / @baseFont);
-  line-height: (30rem / @baseFont);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: (10rem / @baseFont);
-  color: white;
-}
-.username {
-  width: (70rem / @baseFont);
-  font-size: (10rem / @baseFont);
-  display: flex;
-  justify-content: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.user-coin-box {
-  width: (50rem / @baseFont);
-  height: (30rem / @baseFont);
-  // background-color: red;
-  display: flex;
-  justify-content: center;
-}
-.coin-pocket {
-  width: 100%;
-  height: 100%;
-  margin-right: (10rem / @baseFont);
-}
-.userAvatar .coin-follow {
-  position: absolute;
-  display: inline-block;
-  width: 0;
-  height: 0;
-}
-.card-box {
-  width: (170rem / @baseFont);
-  height: (80rem / @baseFont);
-}
-.user-card {
-  display: flex;
-  flex-wrap: nowrap;
-}
-.nosee {
-  width: (170rem / @baseFont);
-  height: (80rem / @baseFont);
-  line-height: (80rem / @baseFont);
-  text-align: center;
-  background-image: url("../../assets/nosee.png");
-  background-size: 100% 100%;
-  border-radius: (20rem / @baseFont);
-}
-.see-status {
-  color: red;
-  font-size: (20rem / @baseFont);
-  font-weight: bold;
-}
-.card {
-  width: (55rem / @baseFont);
-  height: (80rem / @baseFont);
-  border-radius: (5rem / @baseFont);
-}
 .user0-box {
   position: fixed;
-  left: 2%;
-  top: 38%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  bottom: (90rem / @baseFont);
   display: flex;
 }
 .user1-box {
   position: fixed;
-  left: 20%;
-  top: (20rem / @baseFont);
+  right: (10rem / @baseFont);
+  top: 38%;
+
   display: flex;
 }
 .user2-box {
@@ -1248,105 +881,100 @@ body {
 }
 .user3-box {
   position: fixed;
-  right: 2%;
-  top: 38%;
+  left: 20%;
+  top: (20rem / @baseFont);
   display: flex;
 }
 .user4-box {
   position: fixed;
-  left: 20%;
-  bottom: (70rem / @baseFont);
+  left: (10rem / @baseFont);
+  top: 38%;
   display: flex;
 }
-.user5-box {
-  position: fixed;
-  left: 57%;
-  bottom: (70rem / @baseFont);
-  display: flex;
-}
-.active .user-info {
+.active {
   color: red !important;
 }
-.result {
-  height: (100rem / @baseFont);
-  width: (300rem / @baseFont);
-  font-size: (15rem / @baseFont);
-  background-color: antiquewhite;
-  border-radius: (15rem / @baseFont);
-  position: fixed;
-  margin: auto;
-  top: (120rem / @baseFont);
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.lose {
-  filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-}
-.operate {
-  height: (60rem / @baseFont);
-  width: 100%;
-  line-height: (60rem / @baseFont);
-  background-color: rgb(32, 32, 32);
-  position: absolute;
-  left: (0rem / @baseFont);
-  bottom: (0rem / @baseFont);
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-.coin-box {
-  // width: (100rem / @baseFont);
-  display: flex;
-}
-.coin-box div {
-  transition: 1s;
-}
-.coin-box:hover div {
-  transform: scale(0.8);
-}
-.coin-box:hover div:hover {
-  transform: scale(1.2) rotateX(360deg);
-}
-.operate-button {
-  margin-left: (40rem / @baseFont);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.operate-btn {
-  height: (30rem / @baseFont);
-  width: (70rem / @baseFont);
-  border-radius: 10%;
-  margin-left: (20rem / @baseFont);
-  background-color: darkgray;
-  border: none;
-  position: relative;
-  // transform: scale(1.2);
-  transition: 0.7s;
-}
-.operate-btn:hover {
-  transform: scale(1.1);
-  background-color: darkolivegreen;
-}
-.money-coin {
-  width: (40rem / @baseFont);
-  height: (40rem / @baseFont);
-  font-size: (4rem / @baseFont);
-  color: gold;
-  font-weight: bold;
-  margin-left: (20rem / @baseFont);
-  img {
-    width: (40rem / @baseFont);
-    height: (40rem / @baseFont);
-  }
-}
+// .result {
+//   height: (100rem / @baseFont);
+//   width: (300rem / @baseFont);
+//   font-size: (15rem / @baseFont);
+//   background-color: antiquewhite;
+//   border-radius: (15rem / @baseFont);
+//   position: fixed;
+//   margin: auto;
+//   top: (120rem / @baseFont);
+//   left: 0;
+//   right: 0;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+// .lose {
+//   filter: grayscale(100%);
+//   -webkit-filter: grayscale(100%);
+//   -moz-filter: grayscale(100%);
+//   -ms-filter: grayscale(100%);
+//   -o-filter: grayscale(100%);
+// }
+// .operate {
+//   height: (80rem / @baseFont);
+//   width: 100%;
+//   line-height: (60rem / @baseFont);
+//   background-color: rgb(32, 32, 32);
+//   position: fixed;
+//   left: (0rem / @baseFont);
+//   bottom: 0;
+//   margin: 0 auto;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-wrap: nowrap;
+// }
+// .coin-box {
+//   // width: (100rem / @baseFont);
+//   display: flex;
+// }
+// .coin-box div {
+//   transition: 0.3s;
+// }
+// // .coin-box div:hover {
+// //   transform: scale(0.8);
+// // }
+// .coin-box div:hover {
+//   transform: scale(1.2) rotateX(360deg);
+// }
+// .operate-button {
+//   margin-left: (40rem / @baseFont);
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+// .operate-btn {
+//   height: (30rem / @baseFont);
+//   width: (70rem / @baseFont);
+//   border-radius: 10%;
+//   margin-left: (20rem / @baseFont);
+//   background-color: darkgray;
+//   border: none;
+//   position: relative;
+//   // transform: scale(1.2);
+//   transition: 0.7s;
+// }
+// .operate-btn:hover {
+//   transform: scale(1.1);
+//   background-color: darkolivegreen;
+// }
+// .money-coin {
+//   width: (40rem / @baseFont);
+//   height: (40rem / @baseFont);
+//   font-size: (4rem / @baseFont);
+//   color: gold;
+//   font-weight: bold;
+//   margin-left: (20rem / @baseFont);
+//   img {
+//     width: (40rem / @baseFont);
+//     height: (40rem / @baseFont);
+//   }
+// }
 </style>

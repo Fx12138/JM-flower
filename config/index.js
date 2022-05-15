@@ -9,7 +9,10 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'static',
+    //线下使用这是
     assetsPublicPath: '/',
+    //打包使用下面
+    // assetsPublicPath: './',
     proxyTable: {
       '/socket.io': {
         target: 'http://localhost:3000/',
@@ -61,7 +64,11 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
+    //线下使用这个
     assetsPublicPath: '/',
+    //打包时使用下面
+    // assetsPublicPath: './',
+
 
     /**
      * Source Maps

@@ -3,6 +3,7 @@ import { orderPoker } from './pocker'
 //金子
 function isGold(cardList) {
     let color = cardList[0].color;
+
     if (cardList[1].color == color && cardList[2].color == color) {
         return true;
     }
@@ -134,20 +135,16 @@ export function contrastSameType(cardType, cardList1, cardList2) {
         case 0:
             if (cardList1[0].power > cardList2[0].power) {
                 return true
-                break;
             } else {
                 return false
-                break;
             }
         //顺金
         //未考虑123
         case 1:
             if (getMaxCard(cardList1).power > getMaxCard(cardList2).power) {
                 return true
-                break;
             } else {
                 return false
-                break;
             }
         //金子
         case 2:
@@ -155,27 +152,20 @@ export function contrastSameType(cardType, cardList1, cardList2) {
             let orderCardList2 = orderPoker(cardList2)
             if (orderCardList1[2].power > orderCardList2[2].power) {
                 return true
-                break;
             } else if (orderCardList1[2].power < orderCardList2[2].power) {
                 return false
-                break;
             } else {
                 if (orderCardList1[1].power > orderCardList1[1].power) {
                     return true
-                    break;
                 } else if (orderCardList1[1].power < orderCardList1[1].power) {
                     return false
-                    break;
                 } else {
                     if (orderCardList1[0].power > orderCardList1[0].power) {
                         return true
-                        break;
                     } else if (orderCardList1[0].power < orderCardList1[0].power) {
                         return false
-                        break;
                     } else {
                         return false
-                        break;
                     }
                 }
             }
@@ -190,17 +180,15 @@ export function contrastSameType(cardType, cardList1, cardList2) {
             }
         //对子
         case 4:
-            if (getRepeat(cardList1).power > getRepeat(cardList2)) {
+            if (getRepeat(cardList1).power > getRepeat(cardList2).power) {
                 return true
-                break
-            } else if (getRepeat(cardList1).power == getRepeat(cardList2)) {
+            } else if (getRepeat(cardList1).power == getRepeat(cardList2).power) {
                 if (getSingle(cardList1).power > getSingle(cardList2).power) {
                     return true
-                    break
                 }
                 return false
-                break
             }
+            return false
         //散牌
         case 5:
             let orderCardList3 = orderPoker(cardList1)

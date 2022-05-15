@@ -6,3 +6,10 @@ export function sendOtherCards(flowerUserList) {
         params: { flowerUserList }
     })
 }
+export function sendCard(username, roomId, pockers) {
+    return localReq({
+        url: '/flowerGame/sendcard',
+        method: 'post',
+        data: { username, roomId, pockers }
+    })
+}

@@ -6,8 +6,11 @@ import store from './store'
 import VueSocketIO from 'vue-socket.io'
 import socketio from 'socket.io-client';
 Vue.use(new VueSocketIO({
-  debug: false,
+  debug: true,
+  // connection: 'http://212.129.235.112:3000/',
+  // connection: 'http://flower.pushyzheng.com/',
   connection: 'http://localhost:3000/',
+  // options: { path: "/", transports: ['websocket', 'polling', 'flashsocket'] },
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
