@@ -43,3 +43,10 @@ export function outFlowerRoom(roomId, username) {
         }
     })
 }
+
+export function getRooms() {
+    return localReq({
+        url: '/flowerRoom/rooms',
+        method: 'get',
+    })
+}

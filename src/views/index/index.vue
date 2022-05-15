@@ -1,39 +1,38 @@
 <template>
   <div class="content">
-    <h2 class="title-text">show hands</h2>
-    <div class="room-number">
-      <input
-        id="roomNumber"
-        type="text"
-        v-model="roomId"
-        placeholder="请输入房间号"
-      />
-    </div>
-    <div class="option">
-      <button class="option-btn" type="default" @click="inRoom">
-        进入房间
-      </button>
-      <button class="option-btn" @click="logout">退出登录</button>
-    </div>
+    <div class="home-title">游戏大厅</div>
+    <button class="logout-button" @click="logout">退出登录</button>
+
+    <room-list class="room-list" :rooms="roomList"></room-list>
   </div>
 </template>
 
 <script>
 import { getCookie, delCookie } from "../../utils/cookieUtil";
-import { inFlowerRoom } from "../../network/room";
+import { inFlowerRoom, getRooms } from "../../network/room";
+import RoomList from "../../components/room/roomList.vue";
 export default {
   data() {
     return {
       userInfo: null,
       roomId: null,
+      roomList: [],
     };
   },
   created() {
     this.getUserInfo();
-    // console.log(this.userInfo);
+    //获取房间列表
+    this.getAllRoom();
   },
 
   methods: {
+    //获取房间列表
+    getAllRoom() {
+      getRooms().then((res) => {
+        this.roomList = res.data.data;
+      });
+    },
+
     //进入房间
     inRoom: function () {
       inFlowerRoom(this.roomId, this.userInfo).then((res) => {
@@ -55,6 +54,7 @@ export default {
       this.$router.replace("/login");
     },
   },
+  components: { RoomList },
 };
 </script>
 
@@ -72,57 +72,29 @@ body {
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+#app {
+  width: 100%;
+  height: 100%;
+}
 .content {
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  .title-text {
-    font-size: (70rem / @baseFont);
-    margin: 0;
+  .home-title {
+    color: aliceblue;
+    font-size: (30rem / @baseFont);
+    margin-bottom: (50rem / @baseFont);
   }
-}
-.room-number {
-  height: (50rem / @baseFont);
-  width: (230rem / @baseFont);
-  margin-top: (20rem / @baseFont);
-  position: relative;
-  border-radius: (50rem / @baseFont);
-  overflow: hidden;
-}
-.room-number input {
-  display: flex;
-  height: (50rem / @baseFont);
-  width: (230rem / @baseFont);
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  background-color: #aaaaaa;
-  border: none;
-  outline: none;
-}
-.room-number::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  height: (2rem / @baseFont);
-  bottom: 0;
-  width: 100%;
-  background-color: #00ffff;
-  transform: translate(-100%);
-  transition: 2s;
-  z-index: 2;
-}
-.room-number:hover::before {
-  transform: translateX(100%);
-}
-.option {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: (10rem / @baseFont);
-}
-.option-btn {
-  margin: (10rem / @baseFont) (10rem / @baseFont);
+  .room-list {
+    width: 90%;
+  }
+  .logout-button {
+    position: fixed;
+    top: (10rem / @baseFont);
+    right: (10rem / @baseFont);
+  }
 }
 </style>
