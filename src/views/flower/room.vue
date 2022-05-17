@@ -548,10 +548,15 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
       ],
+      //页面语音
       sendAudio: null,
+      //快捷语音消息列表
       showFastList: false,
+      //快捷语音消息列表显示开关
       alertMessage: null,
+      //页面信息提示显示开关
       showAlertMessage: false,
+      //语音项
       talkItem: {
         username: null,
         avatar: null,
@@ -564,6 +569,7 @@ export default {
         follow: null,
         gameFinish: null,
       },
+      coin20: null,
     };
   },
   computed: {
@@ -583,6 +589,8 @@ export default {
     this.pokers = creatPoker();
   },
   mounted() {
+    this.coin20 = require("@/assets/images/coin_20.jpg");
+
     this.sendAudio = document.getElementById("sendAudio");
     this.showAlertMessage = false;
 
@@ -1048,42 +1056,51 @@ export default {
       let transY = 0;
       let rotateAngle = randomNum(0, 360);
       switch (activeId) {
+        //20rem 5rem
         case 0:
-          transX = randomNum(7, 10);
-          transY = randomNum(0, 3) * plusOrMinus;
+          transX = randomNum(27, 40);
+          transY = randomNum(0, 6) * plusOrMinus;
           break;
         case 1:
-          transX = randomNum(400, 600);
-          transY = randomNum(100, 200);
+          transX = randomNum(10, 30);
+          transY = randomNum(7, 27);
           break;
         case 2:
-          transX = randomNum(400, 600);
-          transY = randomNum(100, 200);
+          transX = randomNum(-10, -30);
+          transY = randomNum(7, 27);
           break;
         case 3:
-          transX = randomNum(400, 600);
-          transY = randomNum(100, 200);
+          transX = randomNum(-27, -40);
+          transY = randomNum(0, 6);
           break;
         case 4:
-          transX = randomNum(400, 600);
-          transY = randomNum(100, 200);
+          transX = randomNum(-10, -40);
+          transY = randomNum(-20, -5);
           break;
         case 5:
-          transX = randomNum(400, 600);
-          transY = randomNum(100, 200);
+          transX = randomNum(10, 40);
+          transY = randomNum(-20, -5);
         default:
           transX = randomNum(400, 600);
           transY = randomNum(100, 200);
       }
-      img.src = "/static/coin_20.jpg";
+      // img.src = "~assets/images/coin_20.jpg";
+      img.src = this.coin20;
       img.style.width = "1rem";
       img.style.height = "1rem";
+      img.style.position = "absolute";
       followUserImg[0].appendChild(img); //放到指定的id里
+      console.log(followUserImg[0]);
+
       setTimeout(() => {
-        img.style.width = "1rem";
-        img.style.height = "1rem";
+        img.style.width = "3rem";
+        img.style.height = "3rem";
         img.style.transition = "1" + "s";
-        img.style.transform = `scale(.5) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
+
+        img.style.transform = `scale(.6) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
+
+        // img.style.transform = `scale(.6) translate(28rem,5rem) rotate(${rotateAngle}deg) `;
+
         console.log("偏移量x", activeId);
         console.log("偏移量x", transX);
         console.log("偏移量y", transY);
@@ -1191,6 +1208,14 @@ export default {
 
     //非首局发牌
     sendNewCards(flowerUserList) {
+      let followUserImg = document.getElementsByClassName("coin-follow");
+      for (let i = 0; i < flowerUserList.length; i++) {
+        var child = followUserImg[i].lastElementChild;
+        while (child) {
+          followUserImg[i].removeChild(child);
+          child = followUserImg[i].lastElementChild;
+        }
+      }
       //取消显示alertMessage
       this.showAlertMessage = false;
       //局数加1
@@ -1512,6 +1537,16 @@ body {
   img {
     width: (40rem / @baseFont);
     // height: 100%;
+  }
+}
+.coin-follow {
+  width: 3rem;
+  height: 3rem;
+  // position: fixed;
+  z-index: 1999;
+  img {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>
