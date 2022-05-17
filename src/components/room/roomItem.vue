@@ -1,5 +1,5 @@
 <template>
-  <div class="box" @click="inRoom">
+  <div class="box">
     <div class="room-img-box">
       <img
         :src="
@@ -13,9 +13,7 @@
       <div class="roomId">房间ID:{{ room.roomId }}</div>
     </div>
 
-    <button class="inroom-button" type="default" @click="inRoom">
-      进入房间
-    </button>
+    <button class="inroom-button" type="default">进入房间</button>
   </div>
 </template>
 <script>
@@ -53,16 +51,15 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@baseFont: 50;
+@baseFont: 20;
 .box {
   padding: 0 (20rem / @baseFont);
   width: 95%;
   height: (60rem / @baseFont);
-  //   line-height: (60rem / @baseFont);
   display: flex;
   align-items: center;
   margin-bottom: (10rem / @baseFont);
-  font-size: (30rem / @baseFont);
+  // font-size: (30rem / @baseFont);
   background-color: rgba(222, 255, 255, 0.5);
   border-radius: (20rem / @baseFont);
   .room-img-box {

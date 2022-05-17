@@ -6,13 +6,14 @@ import { localReq } from "./request";
  * @param {*} user 
  * @returns 
  */
-export function createRoom(roomName, user) {
+export function createRoom(roomName, user, password) {
     return localReq({
         url: '/flowerRoom/createRoom',
         method: 'post',
         data: {
             roomName,
-            user
+            user,
+            password
         }
     })
 }
@@ -23,13 +24,14 @@ export function createRoom(roomName, user) {
  * @param {用户信息} user 
  * @returns 
  */
-export function inFlowerRoom(roomId, user) {
+export function inFlowerRoom(roomId, user, password) {
     return localReq({
         url: '/flowerRoom/inRoom',
         method: 'post',
         data: {
             roomId,
-            username: user.username
+            username: user.username,
+            password
         }
     })
 }
@@ -65,5 +67,16 @@ export function getRooms() {
     return localReq({
         url: '/flowerRoom/rooms',
         method: 'get',
+    })
+}
+
+
+export function getRoomById(roomId) {
+    return localReq({
+        url: '/flowerRoom/room',
+        method: 'get',
+        params: {
+            roomId
+        }
     })
 }

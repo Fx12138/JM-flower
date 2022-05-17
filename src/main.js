@@ -11,8 +11,10 @@ import socketio from 'socket.io-client';
 import $ from 'jquery'
 // import 'bootstrap'
 // 引用bootstrap
-import 'assets/bootstrap-3.4.1-dist/css/bootstrap.css'
-import 'assets/bootstrap-3.4.1-dist/js/bootstrap.js'
+// import 'assets/bootstrap-3.4.1-dist/css/bootstrap.css'
+// import 'assets/bootstrap-3.4.1-dist/js/bootstrap.js'
+import 'assets/bootstrap-5.1.3-dist/css/bootstrap.css'
+import 'assets/bootstrap-5.1.3-dist/js/bootstrap.js'
 Vue.prototype.$ = $
 Vue.use(new VueSocketIO({
   debug: true,

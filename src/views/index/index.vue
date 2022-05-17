@@ -1,11 +1,15 @@
 <template>
   <div class="content">
-    <div class="home-title">游戏大厅</div>
+    <audio id="myAudio">
+      <source src="@/assets/audios/test.mp3" type="audio/ogg" />
+      您的浏览器不支持 audio 元素。
+    </audio>
+    <div class="home-title" @click="play">游戏大厅</div>
     <button class="logout-button btn btn-primary" @click="logout">
       退出登录
     </button>
 
-    <room-list class="room-list" :rooms="roomList"></room-list>
+    <div class="room-list"><room-list :rooms="roomList"></room-list></div>
   </div>
 </template>
 
@@ -19,6 +23,7 @@ export default {
       userInfo: null,
       roomId: null,
       roomList: [],
+      myAudio: null,
     };
   },
   created() {
@@ -26,8 +31,17 @@ export default {
     //获取房间列表
     this.getAllRoom();
   },
+  mounted() {
+    let myAudio = document.getElementById("myAudio");
+    this.myAudio = myAudio;
+  },
 
   methods: {
+    play() {
+      this.myAudio.load();
+      this.myAudio.play();
+    },
+
     //获取房间列表
     getAllRoom() {
       getRooms().then((res) => {
@@ -61,7 +75,7 @@ export default {
 </script>
 
 <style lang="less">
-@baseFont: 50;
+@baseFont: 20;
 body {
   margin: 0;
   padding: 0;
@@ -88,10 +102,14 @@ body {
   .home-title {
     color: aliceblue;
     font-size: (30rem / @baseFont);
-    margin-bottom: (50rem / @baseFont);
+    margin-bottom: (10rem / @baseFont);
   }
   .room-list {
     width: 90%;
+    height: 70%;
+    display: flex;
+    align-items: center;
+    // background-color: aqua;
   }
   .logout-button {
     position: fixed;

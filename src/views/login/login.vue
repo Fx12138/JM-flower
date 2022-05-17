@@ -66,7 +66,7 @@ export default {
 };
 </script>
 <style lang="less">
-@baseFont: 50;
+@baseFont: 20;
 body {
   margin: 0 auto;
   padding: 0;

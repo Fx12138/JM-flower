@@ -1,80 +1,97 @@
 <template>
   <div class="box-1">
     <div class="search-box">
-      <button class="search-button" @click="inRoom">
+      <button class="search-button" @click="searchRoom(inputRoomId)">
         <span class="glyphicon glyphicon-search" aria-hidden="true"></span
         >搜索房间
       </button>
-      <input type="text" v-model="roomId" placeholder="请输入房间号" />
+      <input
+        type="text"
+        class="form-control"
+        v-model="inputRoomId"
+        placeholder="请输入房间号"
+      />
     </div>
 
-    <div class="room-items">
-      <room-item
-        class="room-item"
-        v-for="room in rooms"
-        :key="room.id"
-        :room="room"
-      ></room-item>
+    <div class="room-items-box">
+      <div class="room-items">
+        <div class="rooms-box"></div>
+        <room-item
+          class="room-item"
+          v-for="room in rooms"
+          :key="room.roomId"
+          :room="room"
+          @click.native="inRoom(room)"
+        ></room-item>
+      </div>
     </div>
+
     <div class="create-box">
-      <button class="create-button" data-toggle="modal" data-target="#myModal">
+      <button
+        class="create-button"
+        data-bs-toggle="modal"
+        data-bs-target="#roomModal"
+      >
         创建房间
       </button>
     </div>
 
-    <!-- Modal -->
+    <!-- 新建房间Modal -->
     <div
       class="modal fade"
-      id="myModal"
+      id="roomModal"
       tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
     >
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
+            <img src="../../assets/create-team.png" alt="" />
+
+            <h4 class="modal-title" id="myModalLabel">请输入房间信息</h4>
             <button
               type="button"
-              class="close"
-              data-dismiss="modal"
+              class="btn-close"
+              data-bs-dismiss="modal"
               aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="myModalLabel">请输入房间信息</h4>
-            <img src="../../assets/create-team.png" alt="" />
+            ></button>
           </div>
+
           <div class="modal-body">
-            <div
-              class="alert alert-danger alert-dismissible fade in"
-              id="nullRoomNameAlert"
-              v-if="showAlert"
-            >
-              房间名不能为空
-              <button
-                type="button"
-                class="close"
-                data-dismiss="alert"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div class="alert alert-danger" role="alert" v-if="showAlert">
+              {{ alertMessage }}
             </div>
 
             <form action="">
               <div class="form-floating mb-3">
-                <label for="">房间名</label>
                 <input
-                  type="text"
-                  class="form-control"
-                  placeholder="请输入房间名"
                   v-model="newRoomName"
+                  type="email"
+                  class="form-control"
+                  id="roomNameInput"
+                  placeholder="请输入房间名"
                 />
+                <label for="roomNameInput">房间名</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  v-model="newRoomPassword"
+                  type="email"
+                  class="form-control"
+                  id="passwordInput"
+                  placeholder="请输入房间密码"
+                />
+                <label for="passwordInput">房间密码</label>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
               关闭
             </button>
             <button
@@ -88,33 +105,160 @@
         </div>
       </div>
     </div>
+
+    <!-- 密码Modal -->
+    <div
+      class="modal fade"
+      id="passwordModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <img src="../../assets/lock.png" alt="" />
+
+            <h4 class="modal-title" id="myModalLabel">请输入房间密码</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="alert alert-danger" role="alert" v-show="showAlert">
+              {{ alertMessage }}
+            </div>
+
+            <form action="">
+              <div class="form-floating mb-3">
+                <input
+                  v-model="inRoomPassword"
+                  type="email"
+                  class="form-control"
+                  id="floatingInput"
+                  placeholder="请输入房间密码"
+                />
+                <label for="floatingInput">房间密码</label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              关闭
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="vertifyPassword(inRoomPassword)"
+            >
+              进入
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import { getCookie, delCookie } from "@/utils/cookieUtil";
 import RoomItem from "./roomItem.vue";
-import { inFlowerRoom, createRoom } from "@/network/room";
+import { inFlowerRoom, createRoom, getRoomById } from "@/network/room";
 export default {
   data() {
     return {
-      roomId: null,
+      inputRoomId: null,
+      clickRoomId: null,
       userInfo: {},
       newRoomName: null,
+      newRoomPassword: null,
       showAlert: false,
+      alertMessage: "错误",
+      inRoomPassword: null,
+      roomModal: null,
+      passwordModal: null,
     };
   },
   props: ["rooms"],
   methods: {
     init() {
       this.userInfo = JSON.parse(getCookie("userInfo"));
+      //初始化roomModal
+      this.roomModal = new bootstrap.Modal(
+        document.getElementById("roomModal"),
+        {
+          keyboard: true,
+        }
+      );
+      var myModalEl = document.getElementById("roomModal");
+      myModalEl.addEventListener("hide.bs.modal", function (event) {
+        this.showAlert = false;
+      });
+
+      //初始化passwordModal
+      this.passwordModal = new bootstrap.Modal(
+        document.getElementById("passwordModal"),
+        {
+          keyboard: true,
+        }
+      );
     },
-    //进入房间
-    inRoom: function () {
-      inFlowerRoom(this.roomId, this.userInfo).then((res) => {
-        if (res.data.code == 200) {
-          this.$router.push("/flowerRoom/" + this.room.roomId);
+
+    //搜索房间
+    searchRoom(roomId) {
+      getRoomById(roomId).then((res) => {
+        this.clickRoomId = roomId;
+        if (res.data.data) {
+          if (res.data.data.password) {
+            let passwordModal = this.passwordModal;
+            passwordModal.toggle();
+          } else {
+            this.$router.push("/flowerRoom/" + roomId);
+          }
         } else {
-          alert(res.data.msg);
+          alert("房间不存在");
+        }
+      });
+    },
+
+    //进入房间
+    inRoom: function (room) {
+      console.log(room.password);
+      this.clickRoomId = room.roomId;
+      if (room.password) {
+        //房间有密码
+        let passwordModal = this.passwordModal;
+        passwordModal.toggle();
+      } else {
+        //房间没密码
+        inFlowerRoom(room.roomId, this.userInfo, this.inRoomPassword).then(
+          (res) => {
+            if (res.data.code == 200) {
+              this.$router.push("/flowerRoom/" + room.roomId);
+            } else {
+              this.alertMessage = res.data.msg;
+              this.showAlert = true;
+            }
+          }
+        );
+      }
+    },
+    vertifyPassword(password) {
+      inFlowerRoom(this.clickRoomId, this.userInfo, password).then((res) => {
+        if (res.data.code == 200) {
+          let passwordModal = this.passwordModal;
+          passwordModal.toggle();
+          this.$router.push("/flowerRoom/" + this.clickRoomId);
+        } else {
+          this.alertMessage = res.data.msg;
+          this.showAlert = true;
         }
       });
     },
@@ -123,18 +267,20 @@ export default {
       if (newRoomName == null) {
         //填的为空
         this.showAlert = true;
+        this.alertMessage = "房间名不能为空";
       } else {
-        createRoom(newRoomName, this.userInfo).then((res) => {
-          if (res.data.code == 200) {
-            // console.log(res.data.data);
-            $("#myModal").modal("toggle");
-            this.$router.push("/flowerRoom/" + res.data.data.roomId);
-          } else {
-            alert(res.data.msg);
+        createRoom(newRoomName, this.userInfo, this.newRoomPassword).then(
+          (res) => {
+            if (res.data.code == 200) {
+              let roomModal = this.roomModal;
+              roomModal.toggle();
+              this.$router.push("/flowerRoom/" + res.data.data.roomId);
+            } else {
+              alert(res.data.msg);
+            }
           }
-        });
+        );
       }
-      //   $("#myModal").modal("toggle");
     },
   },
   components: { RoomItem },
@@ -145,66 +291,87 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@baseFont: 50;
+@baseFont: 20;
 .box-1 {
   background-color: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
   flex-direction: column;
   border-radius: (20rem / @baseFont);
   position: relative;
+  font-size: (1rem / @baseFont);
   .search-box {
     box-sizing: border-box;
     width: 100%;
-    height: (60rem / @baseFont);
-    line-height: (60rem / @baseFont);
-    padding-top: (20rem / @baseFont);
-    padding-right: (35rem / @baseFont);
+    // height: 10%;
+    flex: 1;
+
+    padding-top: (3rem / @baseFont);
+    overflow: hidden;
+    padding-right: 7%;
     display: flex;
+    align-items: center;
     flex-wrap: nowrap;
     flex-direction: row-reverse;
-    font-size: (15rem / @baseFont);
     input {
-      height: (25rem / @baseFont);
+      height: 90%;
+      width: 16%;
+      max-height: (45rem / @baseFont);
+      font-size: (1rem / @baseFont);
     }
     .search-button {
       margin-left: (20rem / @baseFont);
-      height: (30rem / @baseFont);
-      //   width: (80rem / @baseFont);
-      line-height: (30rem / @baseFont);
+      height: 90%;
+      max-height: (45rem / @baseFont);
+      text-align: center;
       border-radius: 10%;
       text-align: center;
       background-color: skyblue;
       border: 0;
       transition: 0.3s;
-      font-size: (15rem / @baseFont);
+      font-size: (1rem / @baseFont);
     }
     .search-button:hover {
       transform: scale(1.1);
       font-weight: 1000;
     }
   }
-  .room-items {
-    // padding-bottom: (30rem / @baseFont);
+  .room-items-box {
+    flex: 7;
+    // padding: (3rem / @baseFont) (10rem / @baseFont);
     width: 100%;
-    height: (420rem / @baseFont);
-    // background-color: red;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: center;
     overflow: auto;
+    display: flex;
+    justify-content: center;
+    // align-items: center;
+    align-content: flex-start;
+    .room-items {
+      width: 100%;
+      // background-color: aqua;
+      display: flex;
+      flex-wrap: wrap;
+
+      justify-content: center;
+      align-content: flex-start;
+    }
   }
+
   .create-box {
-    margin-top: (15rem / @baseFont);
+    margin-top: auto;
     box-sizing: border-box;
     width: 100%;
+    flex: 2;
+    // height: 15%;
+    max-height: (80rem / @baseFont);
     display: flex;
+    align-items: center;
     flex-direction: row-reverse;
-    padding-right: (30rem / @baseFont);
-    margin-bottom: (30rem / @baseFont);
+    padding-right: 5%;
     .create-button {
-      height: (50rem / @baseFont);
+      height: 80%;
+      max-height: (80rem / @baseFont);
       border: 0;
       color: rgba(255, 255, 255, 1);
       text-decoration: none;
@@ -216,8 +383,8 @@ export default {
       //   padding: (5rem / @baseFont);
       border-radius: (20rem / @baseFont);
       /* let's use box shadows to make the button look more 3-dimensional */
-      box-shadow: 0px (5rem / @baseFont) 0px rgba(219, 31, 5, 1),
-        0px (5rem / @baseFont) (5rem / @baseFont) rgba(0, 0, 0, 0.7);
+      box-shadow: 0px (2rem / @baseFont) 0px rgba(219, 31, 5, 1),
+        0px (2rem / @baseFont) (2rem / @baseFont) rgba(0, 0, 0, 0.7);
     }
   }
 }
@@ -226,8 +393,8 @@ export default {
 .modal-header {
   text-align: center;
   img {
-    width: (200rem / @baseFont);
-    height: (200rem / @baseFont);
+    width: (80rem / @baseFont);
+    height: (80rem / @baseFont);
     background-color: white;
   }
 }

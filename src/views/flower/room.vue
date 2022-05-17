@@ -1,13 +1,17 @@
 <template>
   <div class="outer">
     <div class="message">
-      <h5>房间号:{{ roomId }}</h5>
+      <div>房间号<br />{{ roomId }}</div>
       <div>锅里的钱:{{ roomInfo.coinPool }}</div>
       <div>当前底分(闷牌):{{ roomInfo.bottomCoin }}</div>
     </div>
 
     <div v-if="inOut" class="inout-msg">{{ inOutMes }}</div>
     <div class="sendcard">
+      <audio id="sendAudio">
+        <source src="@/assets/audios/shufflePoker.mp3" type="audio/ogg" />
+        您的浏览器不支持 audio 元素。
+      </audio>
       <button
         v-if="roomInfo.status == 0"
         type="default"
@@ -345,7 +349,7 @@
     </div>
 
     <div
-      class="operate"
+      class="operate-box"
       v-if="
         userInfo.username == roomInfo.activeUser.username &&
         roomInfo.status == 1
@@ -368,17 +372,62 @@
           <img src="@/assets/images/coin_20.jpg" alt="" />
         </div>
       </div>
-      <div class="operate-button">
-        <button class="operate-btn" @click="follow()">跟注</button>
-        <button class="operate-btn" @click="seeCard">看牌</button>
-        <button class="operate-btn" @click="chooseOne">比牌</button>
-        <button class="operate-btn" @click="loseCard">弃牌</button>
+      <div class="operate-button-box">
+        <button @click="follow()">跟注</button>
+        <button @click="seeCard">看牌</button>
+        <button @click="chooseOne">比牌</button>
+        <button @click="loseCard">弃牌</button>
       </div>
     </div>
+    <div class="fast-message-button" @click="showFastList = !showFastList">
+      发消息
+    </div>
+    <div
+      class="fast-message-box"
+      v-show="showFastList"
+      @click="showFastList = !showFastList"
+    >
+      <fast-message-list
+        :roomId="roomId"
+        @sendFastMessage="sendFastMessage"
+      ></fast-message-list>
+    </div>
 
-    <!-- 显示比牌结果框 -->
-    <div v-if="winner" class="result">{{ winner.username }}赢了</div>
-    <div v-if="messageTip" class="result">{{ messageTip }}</div>
+    <!-- 进出房间,比牌结果,游戏结束提示框 -->
+    <div
+      id="alertMessage"
+      class="alert alert-primary"
+      role="alert"
+      v-show="showAlertMessage"
+    >
+      {{ alertMessage }}
+    </div>
+
+    <!-- 右下角快捷语音提示框 -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div
+        id="liveToast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="toast-header">
+          <img :src="talkItem.avatar" class="rounded me-2" alt="..." />
+          <strong class="me-auto">{{ talkItem.username }}</strong>
+          <small>1 second ago</small>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">
+          {{ talkItem.messageContent }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -393,7 +442,9 @@ import {
 } from "../../utils/business/pocker";
 import { sendOtherCards } from "../../network/flower";
 import { getFlowerUserList, outFlowerRoom } from "../../network/room";
+import fastMessageList from "../../components/room/fastMessageList.vue";
 export default {
+  components: { fastMessageList },
   data() {
     return {
       pokers: [],
@@ -406,7 +457,6 @@ export default {
       },
       inOut: false,
       inOutMes: null,
-      messageTip: null,
       userNumber: 0,
       aliveNumber: 0,
       roomInfo: {
@@ -498,6 +548,22 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
       ],
+      sendAudio: null,
+      showFastList: false,
+      alertMessage: null,
+      showAlertMessage: false,
+      talkItem: {
+        username: null,
+        avatar: null,
+        messageContent: null,
+      },
+      optionAudioList: {
+        bipai: null,
+        qipai: null,
+        kanpai: null,
+        follow: null,
+        gameFinish: null,
+      },
     };
   },
   computed: {
@@ -507,31 +573,25 @@ export default {
     },
   },
   created() {
-    // window.addEventListener("beforeunload", (e) => this.beforeunloadHandler(e));
     //获取当前用户信息
     this.getUserInfo();
-    console.log(this.roomId);
     let sendData = {
       userInfo: this.userInfo,
       roomId: this.roomId,
     };
     this.$socket.emit("toFlowerRoom", sendData);
-    // this.distributeSet(this.flowerUserList);
     this.pokers = creatPoker();
   },
   mounted() {
-    window.onbeforeunload = function (e) {
-      e = e || window.event;
-      // 兼容IE8和Firefox 4之前的版本
-      if (e) {
-        alert("22222");
-        // e.returnValue = "您是否确认离开此页面-您输入的数据可能不会被保存";
-      }
-      alert("22222");
-      // return "您是否确认离开此页面-您输入的数据可能不会被保存";
-    };
-    // window.onbeforeunload = this.beforeunloadHandler;
-    // window.addEventListener("beforeunload", this.beforeunloadHandler);
+    this.sendAudio = document.getElementById("sendAudio");
+    this.showAlertMessage = false;
+
+    //加载声音文件
+    this.optionAudioList.gameFinish = require("@/assets/audios/gameFinish.mp3");
+    this.optionAudioList.kanpai = require("@/assets/audios/kanpai.mp3");
+    this.optionAudioList.follow = require("@/assets/audios/follow.mp3");
+    this.optionAudioList.bipai = require("@/assets/audios/bipai.mp3");
+    this.optionAudioList.qipai = require("@/assets/audios/qipai.mp3");
   },
   beforeDestroy() {
     outFlowerRoom(this.roomInfo.roomId, this.userInfo.username).then(() => {
@@ -541,7 +601,6 @@ export default {
       };
       this.$socket.emit("outFlowerRoom", sendData);
     });
-    // this.$socket.emit("outFlowerRoom", this.userInfo);
     window.removeEventListener("beforeunload", (e) =>
       this.beforeunloadHandler(e)
     );
@@ -559,7 +618,6 @@ export default {
         }
       });
     },
-
     //保存状态到localStorage
     saveStatus() {
       window.localStorage.setItem(
@@ -585,6 +643,17 @@ export default {
       this.userNumber = userNumber;
     },
 
+    //接收子组件发射的快捷消息
+    sendFastMessage(data) {
+      this.talkItem.username = data.data.user.username;
+      this.talkItem.avatar = data.data.user.avatar;
+      this.talkItem.messageContent = data.data.messageContent;
+      var toastLiveExample = document.getElementById("liveToast");
+      var toast = new bootstrap.Toast(toastLiveExample);
+
+      toast.show();
+    },
+
     //非首局发牌
     sendNewCards() {
       //计算房间内玩家的数量
@@ -607,7 +676,10 @@ export default {
         }
       }
       //socket通知每个用户更新状态和牌
-      this.$socket.emit("sendNewCards", this.flowerUserList);
+      this.$socket.emit("sendNewCards", {
+        roomId: this.roomId,
+        flowerUserList: this.flowerUserList,
+      });
     },
 
     //发牌
@@ -621,55 +693,59 @@ export default {
       this.roomInfo.activeUser.id = activeUserId;
       this.roomInfo.activeUser.username =
         this.flowerUserList[activeUserId].username;
-      this.$socket.emit("activeUser", this.roomInfo.activeUser);
-      this.$socket.emit("sendPokers", pokers);
-      // this.$socket.emit("sendPokers", this.userNumber);
+      this.$socket.emit("activeUser", {
+        roomId: this.roomId,
+        activeUser: this.roomInfo.activeUser,
+      });
+      this.$socket.emit("sendPokers", { roomId: this.roomId, pockers: pokers });
       this.userNumber = 0;
     },
     //跟注
     follow(coinNum) {
-      let bottomCoin = 1;
-      let activeUserId = this.roomInfo.activeUser.id;
-      if (coinNum == null) {
-        bottomCoin = this.roomInfo.bottomCoin;
-        console.log(bottomCoin);
-        //只选择了跟注,则跟注目前的底分倍数
-        if (this.flowerUserList[activeUserId].cardStatus) {
-          //看牌跟注
-          this.flowerUserList[activeUserId].coin -= bottomCoin * 2;
-          this.flowerUserList[activeUserId].isDown += bottomCoin * 2;
-          this.roomInfo.coinPool += bottomCoin * 2;
-        } else {
-          //闷牌跟注
-          this.flowerUserList[activeUserId].coin -= bottomCoin;
-          this.flowerUserList[activeUserId].isDown += bottomCoin;
-          this.roomInfo.coinPool += bottomCoin;
-        }
-      } else {
-        //加倍
-        if (this.flowerUserList[activeUserId].cardStatus) {
-          //看牌加倍
-          bottomCoin = coinNum / 2;
-          this.flowerUserList[activeUserId].coin -= coinNum;
-          this.flowerUserList[activeUserId].isDown += coinNum;
-          this.roomInfo.coinPool += coinNum;
-        } else {
-          //闷牌加倍
-          bottomCoin = coinNum;
-          this.flowerUserList[activeUserId].coin -= coinNum;
-          this.flowerUserList[activeUserId].isDown += coinNum;
-          this.roomInfo.coinPool += coinNum;
-        }
-      }
-      // let activeId = this.roomInfo.activeUser.id;
-      // this.flowerUserList[activeId].coin -= 10;
-      // this.flowerUserList[activeId].isDown += 10;
-      // this.roomInfo.coinPool += 10;
-      // console.log(bottomCoin);
-      this.$socket.emit("coinPool", this.roomInfo.coinPool);
-      this.$socket.emit("bottomCoin", bottomCoin);
-      this.$socket.emit("follow", this.flowerUserList);
-      // document.getElementById()
+      // let bottomCoin = 1;
+      // let activeUserId = this.roomInfo.activeUser.id;
+      // if (coinNum == null) {
+      //   bottomCoin = this.roomInfo.bottomCoin;
+      //   //只选择了跟注,则跟注目前的底分倍数
+      //   if (this.flowerUserList[activeUserId].cardStatus) {
+      //     //看牌跟注
+      //     this.flowerUserList[activeUserId].coin -= bottomCoin * 2;
+      //     this.flowerUserList[activeUserId].isDown += bottomCoin * 2;
+      //     this.roomInfo.coinPool += bottomCoin * 2;
+      //   } else {
+      //     //闷牌跟注
+      //     this.flowerUserList[activeUserId].coin -= bottomCoin;
+      //     this.flowerUserList[activeUserId].isDown += bottomCoin;
+      //     this.roomInfo.coinPool += bottomCoin;
+      //   }
+      // } else {
+      //   //加倍
+      //   if (this.flowerUserList[activeUserId].cardStatus) {
+      //     //看牌加倍
+      //     bottomCoin = coinNum / 2;
+      //     this.flowerUserList[activeUserId].coin -= coinNum;
+      //     this.flowerUserList[activeUserId].isDown += coinNum;
+      //     this.roomInfo.coinPool += coinNum;
+      //   } else {
+      //     //闷牌加倍
+      //     bottomCoin = coinNum;
+      //     this.flowerUserList[activeUserId].coin -= coinNum;
+      //     this.flowerUserList[activeUserId].isDown += coinNum;
+      //     this.roomInfo.coinPool += coinNum;
+      //   }
+      // }
+      // this.$socket.emit("coinPool", {
+      //   roomId: this.roomId,
+      //   coinPool: this.roomInfo.coinPool,
+      // });
+
+      // this.$socket.emit("bottomCoin", { roomId: this.roomId, bottomCoin });
+
+      this.$socket.emit("follow", {
+        roomId: this.roomId,
+        flowerUserList: this.flowerUserList,
+        coinNum,
+      });
     },
 
     //看牌
@@ -677,7 +753,10 @@ export default {
       this.userInfo.cardStatus = 1;
       this.flowerUserList[this.roomInfo.activeUser.id].cardStatus = 1;
       console.log(this.flowerUserList[this.roomInfo.activeUser.id].card);
-      this.$socket.emit("seeCard", this.roomInfo.activeUser.id);
+      this.$socket.emit("seeCard", {
+        roomId: this.roomId,
+        activeUserId: this.roomInfo.activeUser.id,
+      });
     },
 
     //弃牌
@@ -687,7 +766,10 @@ export default {
         //弃牌后玩家只剩一个,本局结束
 
         //用户弃牌
-        this.$socket.emit("loseCard", this.roomInfo.activeUser);
+        this.$socket.emit("loseCard", {
+          roomId: this.roomId,
+          activeUser: this.roomInfo.activeUser,
+        });
 
         this.flowerUserList.forEach((user) => {
           if (user.username != "等待玩家" && user.liveStatus) {
@@ -697,15 +779,24 @@ export default {
         });
 
         //使用socket更新所有用户的数据
-        this.$socket.emit("nowGameEnd", this.roomInfo.lastWinner);
+        this.$socket.emit("nowGameEnd", {
+          roomId: this.roomId,
+          lastWinner: this.roomInfo.lastWinner,
+        });
         //5秒后开始新的一局
         setTimeout(() => {
           that.sendNewCards();
         }, 5000);
       } else {
         this.aliveNumber -= 1;
-        this.$socket.emit("loseCard", this.roomInfo.activeUser);
-        this.$socket.emit("aliveNumber", this.aliveNumber);
+        this.$socket.emit("loseCard", {
+          roomId: this.roomId,
+          activeUser: this.roomInfo.activeUser,
+        });
+        this.$socket.emit("aliveNumber", {
+          roomId: this.roomId,
+          aliveNumber: this.aliveNumber,
+        });
       }
     },
 
@@ -724,15 +815,17 @@ export default {
         this.showMessage("没有可比牌的用户");
       } else {
         this.roomInfo.status = 2;
-        this.$socket.emit("chooseStatus", 2);
+        this.$socket.emit("chooseStatus", { roomId: this.roomId });
       }
     },
 
+    //信息提示(包括用户进入和退出,比牌结果,当前局结束提示)
     showMessage(mes) {
-      this.messageTip = mes;
+      this.alertMessage = mes;
+      this.showAlertMessage = true;
       setTimeout(() => {
-        this.messageTip = null;
-      }, 2000);
+        this.showAlertMessage = false;
+      }, 3000);
     },
 
     //比牌
@@ -764,21 +857,28 @@ export default {
         this.flowerUserList[user2.id].liveStatus = 0;
         result = [user1, user2];
         //通知所有用户比牌结果
-        this.$socket.emit("contrastResult", result);
+        this.$socket.emit("contrastResult", { roomId: this.roomId, result });
         if (this.aliveNumber - 1 == 1) {
+          //比完后只剩一个玩家 本局结束 进行本局结算
           this.flowerUserList.forEach((user) => {
             if (user.username != "等待玩家" && user.liveStatus) {
               //赢家
               this.roomInfo.lastWinner = user; //设为最近的赢家
             }
           });
-          this.$socket.emit("nowGameEnd", this.roomInfo.lastWinner);
+          this.$socket.emit("nowGameEnd", {
+            roomId: this.roomId,
+            lastWinner: this.roomInfo.lastWinner,
+          });
           setTimeout(() => {
             that.sendNewCards();
           }, 5000);
         } else {
           this.aliveNumber -= 1;
-          this.$socket.emit("aliveNumber", this.aliveNumber);
+          this.$socket.emit("aliveNumber", {
+            roomId: this.roomId,
+            aliveNumber: this.aliveNumber,
+          });
         }
       } else {
         //被比较的赢了,当前用户输了
@@ -788,7 +888,7 @@ export default {
         this.flowerUserList[user2.id].liveStatus = 1;
         result = [user1, user2];
         //通知所有用户比牌结果
-        this.$socket.emit("contrastResult", result);
+        this.$socket.emit("contrastResult", { roomId: this.roomId, result });
         if (this.aliveNumber - 1 == 1) {
           this.flowerUserList.forEach((user) => {
             if (user.username != "等待玩家" && user.liveStatus) {
@@ -796,13 +896,19 @@ export default {
               this.roomInfo.lastWinner = user; //设为最近的赢家
             }
           });
-          this.$socket.emit("nowGameEnd", this.roomInfo.lastWinner);
+          this.$socket.emit("nowGameEnd", {
+            roomId: this.roomId,
+            lastWinner: this.roomInfo.lastWinner,
+          });
           setTimeout(() => {
             this.sendNewCards();
           }, 5000);
         } else {
           this.aliveNumber -= 1;
-          this.$socket.emit("aliveNumber", this.aliveNumber);
+          this.$socket.emit("aliveNumber", {
+            roomId: this.roomId,
+            aliveNumber: this.aliveNumber,
+          });
         }
       }
     },
@@ -814,30 +920,15 @@ export default {
     getUserInfo() {
       this.userInfo = JSON.parse(getCookie("userInfo"));
     },
-    //浏览器或窗口关闭后的操作
-    beforeunloadHandler(e) {
-      // return "beforeunloadHandler被调用了";
-      // outFlowerRoom(this.roomId, this.userInfo.username).then(() => {
-      //   let sendData = {
-      //     userInfo: this.userInfo,
-      //     roomId: this.roomId,
-      //   };
-      //   this.$socket.emit("outFlowerRoom", sendData);
-      // });
-    },
   },
   sockets: {
     //用户进入斗地主房间
     inFlowerRoom: function (flowerUserList) {
       console.log(flowerUserList);
       if (flowerUserList.code == 200) {
-        this.inOut = true;
         let newUsername =
           flowerUserList.data[flowerUserList.data.length - 1].username;
-        this.inOutMes = newUsername + "用户加入了斗地主房间";
-        setTimeout(() => {
-          this.inOut = false;
-        }, 3000);
+        this.showMessage(newUsername + "进入了房间");
         for (let i = 0; i < flowerUserList.data.length; i++) {
           this.flowerUserList[i].username = flowerUserList.data[i].username;
           this.flowerUserList[i].avatar = flowerUserList.data[i].avatar;
@@ -855,16 +946,14 @@ export default {
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg";
         }
       });
-      this.inOut = true;
       let newUsername = data.username;
-      this.inOutMes = newUsername + "用户退出了炸金花房间";
-      setTimeout(() => {
-        this.inOut = false;
-      }, 3000);
+      this.showMessage(newUsername + "退出了房间");
     },
 
     //发牌
     sendPokers(pokers) {
+      this.sendAudio.load();
+      this.sendAudio.play();
       var that = this;
       //计算房间内玩家的数量
       console.log(this.userNumber);
@@ -891,15 +980,6 @@ export default {
           user.liveStatus = 1;
           user.cardStatus = 0;
           user.cardType = judge(user.card);
-          console.log(
-            user.username,
-            "牌" +
-              user.card[0].name +
-              user.card[1].name +
-              user.card[2].name +
-              "牌型为" +
-              user.cardType
-          );
         }
       });
     },
@@ -910,14 +990,50 @@ export default {
       this.roomInfo.activeUser.username = activeUser.username;
     },
     //跟注
-    follow(flowerUserList) {
+    follow(coinNum) {
+      this.sendAudio.src = this.optionAudioList.follow;
+      this.sendAudio.load();
+      this.sendAudio.play();
       this.initData();
+      let bottomCoin = this.roomInfo.bottomCoin;
+      let activeUserId = this.roomInfo.activeUser.id;
+
+      if (coinNum == null) {
+        // bottomCoin = this.roomInfo.bottomCoin;
+        //只选择了跟注,则跟注目前的底分倍数
+        if (this.flowerUserList[activeUserId].cardStatus) {
+          //看牌跟注
+          this.flowerUserList[activeUserId].coin -= bottomCoin * 2;
+          this.flowerUserList[activeUserId].isDown += bottomCoin * 2;
+          this.roomInfo.coinPool += bottomCoin * 2;
+        } else {
+          //闷牌跟注
+          this.flowerUserList[activeUserId].coin -= bottomCoin;
+          this.flowerUserList[activeUserId].isDown += bottomCoin;
+          this.roomInfo.coinPool += bottomCoin;
+        }
+      } else {
+        //加倍
+        if (this.flowerUserList[activeUserId].cardStatus) {
+          //看牌加倍
+          bottomCoin = coinNum / 2;
+          this.flowerUserList[activeUserId].coin -= coinNum;
+          this.flowerUserList[activeUserId].isDown += coinNum;
+          this.roomInfo.coinPool += coinNum;
+        } else {
+          //闷牌加倍
+          bottomCoin = coinNum;
+          this.flowerUserList[activeUserId].coin -= coinNum;
+          this.flowerUserList[activeUserId].isDown += coinNum;
+          this.roomInfo.coinPool += coinNum;
+        }
+      }
+
       let activeId = this.roomInfo.activeUser.id;
 
       let followUserImg = document.getElementsByClassName(
         "coin-follow" + activeId
       );
-      // followUserImg[0].style.position = absolute;
 
       function randomNum(minNum, maxNum) {
         var comt = maxNum - minNum + 1;
@@ -972,31 +1088,30 @@ export default {
         console.log("偏移量x", transX);
         console.log("偏移量y", transY);
       }, 20);
-      // this.$nextTick(function () {
-      //   img.style.transform = `scale(.5) translate(${transX}px,${transY}px) rotate(${rotateAngle}deg) `;
-      //   img.style.transition = "1" + "s";
-      // });
 
-      while (!flowerUserList[(activeId + 1) % this.userNumber].liveStatus) {
+      while (
+        !this.flowerUserList[(activeId + 1) % this.userNumber].liveStatus
+      ) {
         activeId += 1;
       }
       this.roomInfo.activeUser.id = (activeId + 1) % this.userNumber;
       this.roomInfo.activeUser.username =
         this.flowerUserList[(activeId + 1) % this.userNumber].username;
-      console.log(this.roomInfo.activeUser.username);
-      for (let i = 0; i < this.userNumber; i++) {
-        this.flowerUserList[i].coin = flowerUserList[i].coin;
-        this.flowerUserList[i].isDown = flowerUserList[i].isDown;
-      }
     },
 
     //看牌
     seeCard(activeUserId) {
+      this.sendAudio.src = this.optionAudioList.kanpai;
+      this.sendAudio.load();
+      this.sendAudio.play();
       this.flowerUserList[this.roomInfo.activeUser.id].cardStatus = 1;
     },
 
     //弃牌
     loseCard(activeUser) {
+      this.sendAudio.src = this.optionAudioList.qipai;
+      this.sendAudio.load();
+      this.sendAudio.play();
       let activeId = this.roomInfo.activeUser.id;
       this.flowerUserList[activeId].liveStatus = 0;
       while (
@@ -1015,7 +1130,11 @@ export default {
     },
 
     //等待比牌状态
-    chooseStatus() {},
+    chooseStatus() {
+      this.sendAudio.src = this.optionAudioList.bipai;
+      this.sendAudio.load();
+      this.sendAudio.play();
+    },
 
     //比牌结果
     contrastResult(result) {
@@ -1033,10 +1152,6 @@ export default {
         this.flowerUserList[result[0].id].liveStatus = 0;
         this.winner = this.flowerUserList[result[1].id];
       }
-      setTimeout(() => {
-        this.roomInfo.status = 1;
-        this.winner = null;
-      }, 3000);
       let activeId = this.roomInfo.activeUser.id;
       while (
         !this.flowerUserList[(activeId + 1) % this.userNumber].liveStatus
@@ -1046,22 +1161,38 @@ export default {
       this.roomInfo.activeUser.id = (activeId + 1) % this.userNumber;
       this.roomInfo.activeUser.username =
         this.flowerUserList[(activeId + 1) % this.userNumber].username;
-      // console.log(winner);
+      this.roomInfo.status = 1;
+      this.showMessage(this.winner.username + "赢了");
     },
 
     //当前局结束
     nowGameEnd(winner) {
-      this.$message({
-        message: "本局已结束,5秒后自动开始下一局",
-        type: "success",
-      });
-      this.flowerUserList[winner.id].coin += this.roomInfo.coinPool; //赢家的钱加上锅里的
+      this.sendAudio.src = this.optionAudioList.gameFinish;
+      this.sendAudio.load();
+      this.sendAudio.play();
+
+      for (let i = 0; i < this.flowerUserList.length; i++) {
+        if (this.flowerUserList[i].username == winner.username) {
+          console.log("结算之前的钱包", this.flowerUserList[i].coin);
+          console.log("锅里的钱", this.roomInfo.coinPool);
+
+          this.flowerUserList[i].coin += this.roomInfo.coinPool; //赢家的钱加上锅里的
+
+          console.log("结算之后的钱包", this.flowerUserList[i].coin);
+        }
+      }
+
       this.roomInfo.coinPool = 0; //锅里的钱置零
       this.roomInfo.lastWinner = winner; //最近的赢家
+      this.alertMessage =
+        winner.username + "赢了!本局已结束,5秒后自动开始下一局!";
+      this.showAlertMessage = true;
     },
 
     //非首局发牌
     sendNewCards(flowerUserList) {
+      //取消显示alertMessage
+      this.showAlertMessage = false;
       //局数加1
       this.roomInfo.gamesNumber += 1;
       //计算玩家数量
@@ -1072,6 +1203,8 @@ export default {
       this.roomInfo.status = 1;
       //重置底分
       this.roomInfo.bottomCoin = 1;
+      //重置锅底
+      this.roomInfo.coinPool = 0;
       //重置用户的信息
       for (let i = 0; i < this.userNumber; i++) {
         this.flowerUserList[i].cardStatus = 0; //设置还未看牌
@@ -1112,7 +1245,7 @@ export default {
 </script>
 
 <style lang="less">
-@baseFont: 50;
+@baseFont: 20;
 body {
   padding: 0;
   margin: 0;
@@ -1140,8 +1273,8 @@ body {
   transform: translate(-50%, 0);
 }
 .message {
-  width: (150rem / @baseFont);
-  height: (110rem / @baseFont);
+  width: (130rem / @baseFont);
+  height: (130rem / @baseFont);
   border: red solid 1px;
   background-color: silver;
   position: absolute;
@@ -1149,52 +1282,57 @@ body {
   left: (10rem / @baseFont);
   z-index: 99999;
   margin: auto;
-  font-size: (10rem / @baseFont);
+  font-size: (17rem / @baseFont);
+  :nth-child(1) {
+    font-size: (20rem / @baseFont);
+    margin-bottom: (15rem / @baseFont);
+  }
 }
 .userAvatar {
   width: (90rem / @baseFont);
-  height: (100rem / @baseFont);
+  height: (140rem / @baseFont);
   display: flex;
   flex-wrap: wrap;
 }
 .userAvatarImg {
   border-radius: 50%;
-  width: (55rem / @baseFont);
-  height: (55rem / @baseFont);
+  width: (80rem / @baseFont);
+  height: (80rem / @baseFont);
   margin: 0 auto;
 }
 .user-info {
   width: (90rem / @baseFont);
   height: (60rem / @baseFont);
-  line-height: (30rem / @baseFont);
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: (10rem / @baseFont);
+  font-size: (15rem / @baseFont);
   color: white;
+  .username {
+    width: (90rem / @baseFont);
+    font-size: (18rem / @baseFont);
+    display: flex;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .user-coin-box {
+    width: (40rem / @baseFont);
+    height: (30rem / @baseFont);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: (30rem / @baseFont);
+      height: (30rem / @baseFont);
+      margin-right: (10rem / @baseFont);
+    }
+  }
 }
-.username {
-  width: (70rem / @baseFont);
-  font-size: (10rem / @baseFont);
-  display: flex;
-  justify-content: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.user-coin-box {
-  width: (50rem / @baseFont);
-  height: (30rem / @baseFont);
-  // background-color: red;
-  display: flex;
-  justify-content: center;
-}
-.coin-pocket {
-  width: 100%;
-  height: 100%;
-  margin-right: (10rem / @baseFont);
-}
+
 .userAvatar .coin-follow {
   position: absolute;
   display: inline-block;
@@ -1210,9 +1348,9 @@ body {
   flex-wrap: nowrap;
 }
 .nosee {
-  width: (170rem / @baseFont);
-  height: (80rem / @baseFont);
-  line-height: (80rem / @baseFont);
+  width: (210rem / @baseFont);
+  height: (100rem / @baseFont);
+  line-height: (100rem / @baseFont);
   text-align: center;
   background-image: url("../../assets/nosee.png");
   background-size: 100% 100%;
@@ -1250,18 +1388,23 @@ body {
   position: fixed;
   right: 2%;
   top: 38%;
+  // bottom: (240rem / @baseFont);
   display: flex;
 }
 .user4-box {
+  height: (140rem / @baseFont);
+  overflow: hidden;
   position: fixed;
   left: 20%;
-  bottom: (70rem / @baseFont);
+  bottom: (60rem / @baseFont);
   display: flex;
 }
 .user5-box {
+  height: (140rem / @baseFont);
   position: fixed;
+  overflow: hidden;
   left: 57%;
-  bottom: (70rem / @baseFont);
+  bottom: (60rem / @baseFont);
   display: flex;
 }
 .active .user-info {
@@ -1289,64 +1432,86 @@ body {
   -ms-filter: grayscale(100%);
   -o-filter: grayscale(100%);
 }
-.operate {
-  height: (60rem / @baseFont);
+.operate-box {
   width: 100%;
+  height: (60rem / @baseFont);
   line-height: (60rem / @baseFont);
   background-color: rgb(32, 32, 32);
-  position: absolute;
+  position: fixed;
   left: (0rem / @baseFont);
   bottom: (0rem / @baseFont);
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  // align-content: center;
   flex-wrap: nowrap;
+  .coin-box {
+    display: flex;
+    .money-coin {
+      width: (60rem / @baseFont);
+      height: (60rem / @baseFont);
+      margin-left: (30rem / @baseFont);
+      img {
+        width: (60rem / @baseFont);
+        height: (60rem / @baseFont);
+      }
+    }
+  }
+  .coin-box div {
+    transition: 1s;
+  }
+  .coin-box:hover div {
+    transform: scale(0.8);
+  }
+  .coin-box div:hover {
+    transform: scale(1.1) rotateX(360deg);
+  }
+  .operate-button-box {
+    margin-left: (40rem / @baseFont);
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+    button {
+      height: (50rem / @baseFont);
+      line-height: (50rem / @baseFont);
+      width: (60rem / @baseFont);
+      text-align: center;
+      border-radius: 10%;
+      margin-left: (20rem / @baseFont);
+      background-color: darkgray;
+      border: none;
+      // transition: 0.7s;
+    }
+  }
 }
-.coin-box {
-  // width: (100rem / @baseFont);
-  display: flex;
+.fast-message-button {
+  position: fixed;
+  bottom: (15rem / @baseFont);
+  right: (15rem / @baseFont);
+  z-index: 999;
+  color: white;
 }
-.coin-box div {
-  transition: 1s;
+.fast-message-box {
+  position: fixed;
+  bottom: (60rem / @baseFont);
+  right: (5rem / @baseFont);
 }
-.coin-box:hover div {
-  transform: scale(0.8);
+#alertMessage {
+  position: fixed;
+  width: 30%;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  text-align: center;
 }
-.coin-box:hover div:hover {
-  transform: scale(1.2) rotateX(360deg);
-}
-.operate-button {
-  margin-left: (40rem / @baseFont);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.operate-btn {
-  height: (30rem / @baseFont);
-  width: (70rem / @baseFont);
-  border-radius: 10%;
-  margin-left: (20rem / @baseFont);
-  background-color: darkgray;
-  border: none;
-  position: relative;
-  // transform: scale(1.2);
-  transition: 0.7s;
-}
-.operate-btn:hover {
-  transform: scale(1.1);
-  background-color: darkolivegreen;
-}
-.money-coin {
-  width: (40rem / @baseFont);
-  height: (40rem / @baseFont);
-  font-size: (4rem / @baseFont);
-  color: gold;
-  font-weight: bold;
-  margin-left: (20rem / @baseFont);
+#liveToast {
+  position: fixed;
+  bottom: (65rem / @baseFont);
+  right: (10rem / @baseFont);
   img {
     width: (40rem / @baseFont);
-    height: (40rem / @baseFont);
+    // height: 100%;
   }
 }
 </style>
