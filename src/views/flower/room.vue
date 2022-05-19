@@ -1,23 +1,21 @@
 <template>
   <div class="outer">
-    <div class="message">
-      <div>房间号<br />{{ roomId }}</div>
-      <div>锅里的钱:{{ roomInfo.coinPool }}</div>
-      <div>当前底分(闷牌):{{ roomInfo.bottomCoin }}</div>
-    </div>
+    <!-- 页面音频 -->
+    <audio id="sendAudio">
+      <source src="@/assets/audios/shufflePoker.mp3" type="audio/ogg" />
+      您的浏览器不支持 audio 元素。
+    </audio>
+
+    <room-info :roomInfo="roomInfo" class="room-info"></room-info>
 
     <div class="sendcard">
-      <audio id="sendAudio">
-        <source src="@/assets/audios/shufflePoker.mp3" type="audio/ogg" />
-        您的浏览器不支持 audio 元素。
-      </audio>
       <button
         v-if="roomInfo.status == 0"
         type="default"
-        class="sendcard-btn"
+        class="btn btn-primary btn-lg"
         @click="beginGame(pokers)"
       >
-        发牌
+        开始游戏
       </button>
     </div>
 
@@ -419,19 +417,13 @@
 </template>
 
 <script>
-import { getCookie, setCookie, delCookie } from "../../utils/cookieUtil";
-import { judge, contrastSameType } from "../../utils/business/judge";
-import { randomNum } from "../../utils/otherUtils";
-import {
-  creatPoker,
-  shufflePoker,
-  orderPoker,
-} from "../../utils/business/pocker";
-import { sendOtherCards } from "../../network/flower";
-import { outFlowerRoom, getRoomById, saveRoomStatus } from "../../network/room";
+import { getCookie } from "../../utils/cookieUtil";
+import { creatPoker } from "../../utils/business/pocker";
+import { getRoomById } from "../../network/room";
+import roomInfo from "components/room/roomInfo.vue";
 import fastMessageList from "../../components/room/fastMessageList.vue";
 export default {
-  components: { fastMessageList },
+  components: { fastMessageList, roomInfo },
   data() {
     return {
       pokers: [],
@@ -713,19 +705,6 @@ export default {
       },
       coin20: null,
     };
-  },
-  watch: {
-    // flowerUserList: {
-    //   handler(newValue, oldValue) {
-    //     console.log("改变了");
-    //     let user = newValue.filter((user) => {
-    //       return user.username == this.userInfo.username;
-    //     });
-    //     this.userInfo = user;
-    //   },
-    //   immediate: false,
-    //   deep: true,
-    // },
   },
   computed: {
     roomId() {
@@ -1193,26 +1172,13 @@ body {
   transform: translate(-50%, -50%);
 }
 
-.message {
-  width: (150rem / @baseFont);
-  height: (135rem / @baseFont);
-  border: black solid 1px;
-  background-color: silver;
-  opacity: 0.8;
+.room-info {
   position: absolute;
   top: (10rem / @baseFont);
   left: (10rem / @baseFont);
   z-index: 99999;
-  margin: auto;
-  div {
-    font-size: (1rem / @baseFont);
-  }
-
-  :nth-child(1) {
-    font-size: (20rem / @baseFont);
-    margin-bottom: (15rem / @baseFont);
-  }
 }
+
 .userAvatar {
   width: (90rem / @baseFont);
   height: (140rem / @baseFont);
