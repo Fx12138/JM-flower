@@ -637,20 +637,6 @@ export default {
         }
       });
     },
-    //保存状态到localStorage
-    saveStatus() {},
-
-    //获取localStorage中的信息
-    getStatus() {
-      let flowerUserList = JSON.parse(
-        window.localStorage.getItem("flowerUserList")
-      );
-      let roomInfo = JSON.parse(window.localStorage.getItem("roomInfo"));
-      let userNumber = JSON.parse(window.localStorage.getItem("userNumber"));
-      this.flowerUserList = flowerUserList;
-      this.roomInfo = roomInfo;
-      this.userNumber = userNumber;
-    },
 
     //接收子组件发射的快捷消息
     sendFastMessage(data) {
@@ -661,34 +647,6 @@ export default {
       var toast = new bootstrap.Toast(toastLiveExample);
 
       toast.show();
-    },
-
-    //非首局发牌
-    sendNewCards() {
-      //计算房间内玩家的数量
-      this.initData();
-
-      //分牌
-      let pokers = creatPoker();
-      var lastCards = 52;
-      lastCards = lastCards - this.userNumber * 3;
-
-      //清空每个玩家手中的牌
-      for (let i = 0; i < this.userNumber; i++) {
-        this.flowerUserList[i].card = [];
-      }
-      while (pokers.length > lastCards) {
-        //只要牌堆的牌大于应该剩余牌数，玩家继续摸牌
-        for (let i = 0; i < this.userNumber; i++) {
-          //玩家轮流摸牌
-          this.flowerUserList[i].card.push(pokers.pop());
-        }
-      }
-      //socket通知每个用户更新状态和牌
-      this.$socket.emit("sendNewCards", {
-        roomId: this.roomId,
-        flowerUserList: this.flowerUserList,
-      });
     },
 
     //发牌
@@ -764,10 +722,6 @@ export default {
         contrasteder,
       });
     },
-
-    //显示比牌结果框
-    showResult() {},
-
     //获取用户信息
     getUserInfo() {
       this.userInfo = JSON.parse(getCookie("userInfo"));
@@ -776,7 +730,6 @@ export default {
   sockets: {
     //用户进入斗地主房间
     inFlowerRoom: function (flowerUserList) {
-      console.log(flowerUserList);
       if (flowerUserList.code == 200) {
         let newUsername =
           flowerUserList.data[flowerUserList.data.length - 1].username;
@@ -816,15 +769,8 @@ export default {
       for (let i = 0; i < room.flowerUserList.length; i++) {
         this.flowerUserList[i] = room.flowerUserList[i];
       }
-      console.log(room);
-      console.log(this.roomInfo);
     },
 
-    //activeUser
-    activeUser(activeUser) {
-      this.roomInfo.activeUser.id = activeUser.id;
-      this.roomInfo.activeUser.username = activeUser.username;
-    },
     //跟注
     follow(room) {
       //播放音效
@@ -850,7 +796,6 @@ export default {
         return Math.floor(Math.random() * comt + minNum);
       }
       var plusOrMinus = Math.random() < 0.5 ? -1 : 1; //随机+1或-1
-      console.log("正负只", plusOrMinus);
       var img = document.createElement("img"); //创建一个标签
       let transX = 0;
       let transY = 0;
@@ -934,11 +879,6 @@ export default {
       this.roomInfo = data.room.roomInfo;
     },
 
-    //存活玩家数
-    aliveNumber(aliveNumber) {
-      this.aliveNumber = aliveNumber;
-    },
-
     //等待比牌状态
     chooseStatus() {
       this.sendAudio.src = this.optionAudioList.bipai;
@@ -995,16 +935,6 @@ export default {
         );
         this.flowerUserList[i] = room.flowerUserList[i];
       }
-    },
-
-    //锅里的钱
-    coinPool(coinPool) {
-      this.roomInfo.coinPool = coinPool;
-    },
-
-    //底分
-    bottomCoin(bottomCoin) {
-      this.roomInfo.bottomCoin = bottomCoin;
     },
   },
 };
