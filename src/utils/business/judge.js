@@ -173,10 +173,8 @@ export function contrastSameType(cardType, cardList1, cardList2) {
         case 3:
             if (getMinCard(cardList1).power > getMaxCard(cardList2)) {
                 return true
-                break
             } else {
                 return false
-                break
             }
         //对子
         case 4:
@@ -195,24 +193,17 @@ export function contrastSameType(cardType, cardList1, cardList2) {
             let orderCardList4 = orderPoker(cardList2)
             if (orderCardList3[2].power > orderCardList4[2].power) {
                 return true
-                break
             } else if (orderCardList3[2].power == orderCardList4[2].power) {
                 if (orderCardList3[1].power > orderCardList4[1].power) {
                     return true
-                    break
                 } else if (orderCardList3[1].power == orderCardList4[1].power) {
                     if (orderCardList3[0].power > orderCardList4[0].power) {
                         return true
-                        break
                     }
                     return false
-                    break
                 }
             }
             return false
-            break
-
-
     }
 }
 

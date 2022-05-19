@@ -215,12 +215,45 @@ export default {
     searchRoom(roomId) {
       getRoomById(roomId).then((res) => {
         this.clickRoomId = roomId;
+
         if (res.data.data) {
-          if (res.data.data.password) {
-            let passwordModal = this.passwordModal;
-            passwordModal.toggle();
+          let userInRoom = false;
+          for (let i = 0; i < res.data.data.flowerUserList.length; i++) {
+            if (
+              res.data.data.flowerUserList[i].username == this.userInfo.username
+            ) {
+              userInRoom = true;
+            }
+          }
+          if (userInRoom) {
+            //用户已经在房间里则直接进入
+            this.$router.push("/flowerRoom/" + this.clickRoomId);
           } else {
-            this.$router.push("/flowerRoom/" + roomId);
+            //用户没在房间里
+            if (res.data.data.password) {
+              //房间有密码
+              let passwordModal = this.passwordModal;
+              passwordModal.toggle();
+            } else {
+              //房间没密码
+              inFlowerRoom(
+                room.roomId,
+                this.userInfo,
+                this.inRoomPassword
+              ).then((res) => {
+                if (res.data.code == 200) {
+                  this.$router.push("/flowerRoom/" + this.clickRoomId);
+                  let sendData = {
+                    userInfo: this.userInfo,
+                    roomId: this.clickRoomId,
+                  };
+                  this.$socket.emit("toFlowerRoom", sendData);
+                } else {
+                  this.alertMessage = res.data.msg;
+                  this.showAlert = true;
+                }
+              });
+            }
           }
         } else {
           alert("房间不存在");
@@ -232,23 +265,46 @@ export default {
     inRoom: function (room) {
       console.log(room.password);
       this.clickRoomId = room.roomId;
-      if (room.password) {
-        //房间有密码
-        let passwordModal = this.passwordModal;
-        passwordModal.toggle();
-      } else {
-        //房间没密码
-        inFlowerRoom(room.roomId, this.userInfo, this.inRoomPassword).then(
-          (res) => {
-            if (res.data.code == 200) {
-              this.$router.push("/flowerRoom/" + room.roomId);
-            } else {
-              this.alertMessage = res.data.msg;
-              this.showAlert = true;
-            }
+
+      getRoomById(this.clickRoomId).then((res) => {
+        let userInRoom = false;
+        for (let i = 0; i < res.data.data.flowerUserList.length; i++) {
+          if (
+            res.data.data.flowerUserList[i].username == this.userInfo.username
+          ) {
+            userInRoom = true;
           }
-        );
-      }
+        }
+        if (userInRoom) {
+          //用户已经在房间里则直接进入
+          this.$router.push("/flowerRoom/" + this.clickRoomId);
+        } else {
+          //用户没在房间里
+          if (res.data.data.password) {
+            //房间有密码
+            let passwordModal = this.passwordModal;
+            passwordModal.toggle();
+          } else {
+            //房间没密码
+
+            inFlowerRoom(room.roomId, this.userInfo, this.inRoomPassword).then(
+              (res) => {
+                if (res.data.code == 200) {
+                  this.$router.push("/flowerRoom/" + this.clickRoomId);
+                  let sendData = {
+                    userInfo: this.userInfo,
+                    roomId: this.clickRoomId,
+                  };
+                  this.$socket.emit("toFlowerRoom", sendData);
+                } else {
+                  this.alertMessage = res.data.msg;
+                  this.showAlert = true;
+                }
+              }
+            );
+          }
+        }
+      });
     },
     vertifyPassword(password) {
       inFlowerRoom(this.clickRoomId, this.userInfo, password).then((res) => {
@@ -256,6 +312,11 @@ export default {
           let passwordModal = this.passwordModal;
           passwordModal.toggle();
           this.$router.push("/flowerRoom/" + this.clickRoomId);
+          let sendData = {
+            userInfo: this.userInfo,
+            roomId: this.clickRoomId,
+          };
+          this.$socket.emit("toFlowerRoom", sendData);
         } else {
           this.alertMessage = res.data.msg;
           this.showAlert = true;

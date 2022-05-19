@@ -47,7 +47,6 @@ export function shufflePoker(pokers) {
 
 //排序
 export function orderPoker(cardsList) {
-    // console.log(newCardList);
     cardsList.sort(function (a, b) {
         //a,b代表着排序过程中两个相互比较的元素
         return a.order - b.order;

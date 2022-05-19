@@ -80,3 +80,16 @@ export function getRoomById(roomId) {
         }
     })
 }
+
+//保存房间信息
+export function saveRoomStatus(roomInfo, flowerUserList) {
+    return localReq({
+        url: '/flowerRoom/saveRoomStatus',
+        method: 'post',
+        data: {
+            "roomInfo": JSON.stringify(roomInfo), "flowerUserList": JSON.stringify(flowerUserList)
+        }
+    })
+}
+
+

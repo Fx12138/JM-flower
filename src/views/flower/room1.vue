@@ -6,6 +6,7 @@
       <div>当前底分(闷牌):{{ roomInfo.bottomCoin }}</div>
     </div>
 
+    <div v-if="inOut" class="inout-msg">{{ inOutMes }}</div>
     <div class="sendcard">
       <audio id="sendAudio">
         <source src="@/assets/audios/shufflePoker.mp3" type="audio/ogg" />
@@ -49,7 +50,9 @@
             flowerUserList[0].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[0])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[0])
+          "
         >
           比牌
         </button>
@@ -105,7 +108,9 @@
             flowerUserList[1].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[1])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[1])
+          "
         >
           比牌
         </button>
@@ -156,7 +161,9 @@
             flowerUserList[2].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[2])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[2])
+          "
         >
           比牌
         </button>
@@ -226,7 +233,9 @@
             flowerUserList[3].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[3])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[3])
+          "
         >
           比牌
         </button>
@@ -259,7 +268,9 @@
             flowerUserList[4].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[4])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[4])
+          "
         >
           比牌
         </button>
@@ -310,7 +321,9 @@
             flowerUserList[5].cardStatus &&
             roomInfo.status == 2
           "
-          @click="contrast(userInfo, flowerUserList[5])"
+          @click="
+            contrast(flowerUserList[roomInfo.activeUser.id], flowerUserList[5])
+          "
         >
           比牌
         </button>
@@ -428,7 +441,7 @@ import {
   orderPoker,
 } from "../../utils/business/pocker";
 import { sendOtherCards } from "../../network/flower";
-import { outFlowerRoom, getRoomById, saveRoomStatus } from "../../network/room";
+import { getFlowerUserList, outFlowerRoom } from "../../network/room";
 import fastMessageList from "../../components/room/fastMessageList.vue";
 export default {
   components: { fastMessageList },
@@ -436,17 +449,14 @@ export default {
     return {
       pokers: [],
       userInfo: {
-        id: 0,
-        avatar:
-          "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
-        username: "等待玩家",
+        username: null,
+        avatar: null,
         card: [],
         cardType: null,
-        coin: 0,
-        isDown: 0,
-        cardStatus: 0, //是否看牌 0未看,1看了
-        liveStatus: 0, //是否弃牌或输 0输,1活着
+        cardStatus: 0,
       },
+      inOut: false,
+      inOutMes: null,
       userNumber: 0,
       aliveNumber: 0,
       roomInfo: {
@@ -462,8 +472,6 @@ export default {
         coinPool: 0,
         gamesNumber: 1,
         bottomCoin: 1,
-        aliveNumber: 0,
-        userNumber: 0,
       },
       winner: null,
       flowerUserList: [
@@ -480,7 +488,7 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
         {
-          id: 0,
+          id: 1,
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
@@ -492,7 +500,7 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
         {
-          id: 0,
+          id: 2,
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
@@ -504,7 +512,7 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
         {
-          id: 0,
+          id: 3,
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
@@ -516,7 +524,7 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
         {
-          id: 0,
+          id: 4,
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
@@ -528,7 +536,7 @@ export default {
           liveStatus: 0, //是否弃牌或输 0输,1活着
         },
         {
-          id: 0,
+          id: 5,
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
@@ -564,19 +572,6 @@ export default {
       coin20: null,
     };
   },
-  watch: {
-    flowerUserList: {
-      handler(newValue, oldValue) {
-        this.flowerUserList.filter((user) => {
-          if ((user.username = this.userInfo.username)) {
-            this.userInfo = user;
-          }
-        });
-      },
-      immediate: true,
-      deep: true,
-    },
-  },
   computed: {
     roomId() {
       this.roomInfo.roomId = this.$route.params.roomId;
@@ -586,7 +581,6 @@ export default {
   created() {
     //获取当前用户信息
     this.getUserInfo();
-    this.getOriginData();
     let sendData = {
       userInfo: this.userInfo,
       roomId: this.roomId,
@@ -607,38 +601,43 @@ export default {
     this.optionAudioList.bipai = require("@/assets/audios/bipai.mp3");
     this.optionAudioList.qipai = require("@/assets/audios/qipai.mp3");
   },
+  beforeDestroy() {
+    outFlowerRoom(this.roomInfo.roomId, this.userInfo.username).then(() => {
+      let sendData = {
+        userInfo: this.userInfo,
+        roomId: this.roomId,
+      };
+      this.$socket.emit("outFlowerRoom", sendData);
+    });
+    window.removeEventListener("beforeunload", (e) =>
+      this.beforeunloadHandler(e)
+    );
+  },
   methods: {
-    getOriginData() {
-      getRoomById(this.roomId).then((res) => {
-        this.roomInfo = res.data.data.roomInfo;
-        for (let i = 0; i < res.data.data.flowerUserList.length; i++) {
-          this.flowerUserList[i] = res.data.data.flowerUserList[i];
-          if (this.flowerUserList[i].cardStatus) {
-            for (let i = 0; i < this.flowerUserList[i].card.length; i++) {
-              this.flowerUserList[i].card[
-                i
-              ].path = require("../../assets/images" +
-                this.flowerUserList[i].card[i].path.replace(
-                  "../../assets/images",
-                  ""
-                ));
-            }
-          }
-        }
-      });
-    },
     //初始化一些数据
     initData() {
+      // window.localStorage.setItem("roomInfo",this.roomInfo);
+      var that = this;
       this.userNumber = 0;
       //计算房间内玩家的数量
-      this.flowerUserList.forEach((user) => {
+      that.flowerUserList.forEach((user) => {
         if (user.username !== "等待玩家") {
-          this.userNumber += 1;
+          that.userNumber += 1;
         }
       });
     },
     //保存状态到localStorage
-    saveStatus() {},
+    saveStatus() {
+      window.localStorage.setItem(
+        "flowerUserList",
+        JSON.stringify(this.flowerUserList)
+      );
+      window.localStorage.setItem("roomInfo", JSON.stringify(this.roomInfo));
+      window.localStorage.setItem(
+        "userNumber",
+        JSON.stringify(this.userNumber)
+      );
+    },
 
     //获取localStorage中的信息
     getStatus() {
@@ -693,12 +692,63 @@ export default {
 
     //发牌
     beginGame(pokers) {
+      var that = this;
+
       //房间内人数
       this.initData();
+      //首局随机选出先手玩家
+      let activeUserId = randomNum(0, this.userNumber - 1);
+      this.roomInfo.activeUser.id = activeUserId;
+      this.roomInfo.activeUser.username =
+        this.flowerUserList[activeUserId].username;
+      this.$socket.emit("activeUser", {
+        roomId: this.roomId,
+        activeUser: this.roomInfo.activeUser,
+      });
       this.$socket.emit("sendPokers", { roomId: this.roomId, pockers: pokers });
+      this.userNumber = 0;
     },
     //跟注
     follow(coinNum) {
+      // let bottomCoin = 1;
+      // let activeUserId = this.roomInfo.activeUser.id;
+      // if (coinNum == null) {
+      //   bottomCoin = this.roomInfo.bottomCoin;
+      //   //只选择了跟注,则跟注目前的底分倍数
+      //   if (this.flowerUserList[activeUserId].cardStatus) {
+      //     //看牌跟注
+      //     this.flowerUserList[activeUserId].coin -= bottomCoin * 2;
+      //     this.flowerUserList[activeUserId].isDown += bottomCoin * 2;
+      //     this.roomInfo.coinPool += bottomCoin * 2;
+      //   } else {
+      //     //闷牌跟注
+      //     this.flowerUserList[activeUserId].coin -= bottomCoin;
+      //     this.flowerUserList[activeUserId].isDown += bottomCoin;
+      //     this.roomInfo.coinPool += bottomCoin;
+      //   }
+      // } else {
+      //   //加倍
+      //   if (this.flowerUserList[activeUserId].cardStatus) {
+      //     //看牌加倍
+      //     bottomCoin = coinNum / 2;
+      //     this.flowerUserList[activeUserId].coin -= coinNum;
+      //     this.flowerUserList[activeUserId].isDown += coinNum;
+      //     this.roomInfo.coinPool += coinNum;
+      //   } else {
+      //     //闷牌加倍
+      //     bottomCoin = coinNum;
+      //     this.flowerUserList[activeUserId].coin -= coinNum;
+      //     this.flowerUserList[activeUserId].isDown += coinNum;
+      //     this.roomInfo.coinPool += coinNum;
+      //   }
+      // }
+      // this.$socket.emit("coinPool", {
+      //   roomId: this.roomId,
+      //   coinPool: this.roomInfo.coinPool,
+      // });
+
+      // this.$socket.emit("bottomCoin", { roomId: this.roomId, bottomCoin });
+
       this.$socket.emit("follow", {
         roomId: this.roomId,
         flowerUserList: this.flowerUserList,
@@ -710,6 +760,7 @@ export default {
     seeCard() {
       this.userInfo.cardStatus = 1;
       this.flowerUserList[this.roomInfo.activeUser.id].cardStatus = 1;
+      console.log(this.flowerUserList[this.roomInfo.activeUser.id].card);
       this.$socket.emit("seeCard", {
         roomId: this.roomId,
         activeUserId: this.roomInfo.activeUser.id,
@@ -718,11 +769,43 @@ export default {
 
     //弃牌
     loseCard() {
-      //用户弃牌
-      this.$socket.emit("loseCard", {
-        roomId: this.roomId,
-        activeUser: this.roomInfo.activeUser,
-      });
+      let that = this;
+      if (this.aliveNumber - 1 == 1) {
+        //弃牌后玩家只剩一个,本局结束
+
+        //用户弃牌
+        this.$socket.emit("loseCard", {
+          roomId: this.roomId,
+          activeUser: this.roomInfo.activeUser,
+        });
+
+        this.flowerUserList.forEach((user) => {
+          if (user.username != "等待玩家" && user.liveStatus) {
+            //赢家
+            this.roomInfo.lastWinner = user; //设为最近的赢家
+          }
+        });
+
+        //使用socket更新所有用户的数据
+        this.$socket.emit("nowGameEnd", {
+          roomId: this.roomId,
+          lastWinner: this.roomInfo.lastWinner,
+        });
+        //5秒后开始新的一局
+        setTimeout(() => {
+          that.sendNewCards();
+        }, 5000);
+      } else {
+        this.aliveNumber -= 1;
+        this.$socket.emit("loseCard", {
+          roomId: this.roomId,
+          activeUser: this.roomInfo.activeUser,
+        });
+        this.$socket.emit("aliveNumber", {
+          roomId: this.roomId,
+          aliveNumber: this.aliveNumber,
+        });
+      }
     },
 
     //选择一个进行比牌
@@ -754,15 +837,88 @@ export default {
     },
 
     //比牌
-    contrast(contrastinger, contrasteder) {
-      contrastinger = this.flowerUserList.filter((user) => {
-        return user.username == contrastinger.username;
-      })[0];
-      this.$socket.emit("contrastResult", {
-        roomId: this.roomId,
-        contrastinger,
-        contrasteder,
-      });
+    contrast(user1, user2) {
+      let result = null;
+
+      if (user1.cardType < user2.cardType) {
+        //用户1的牌大
+        // return true;
+        result = true;
+      } else if (user1.cardType > user2.cardType) {
+        // return false;
+        result = false;
+      } else {
+        //同样的牌型
+        // return contrastSameType(user1.card,user2.card)
+        result = contrastSameType(user1.cardType, user1.card, user2.card);
+      }
+
+      if (result) {
+        //当前用户赢了,被比较的用户输了
+        let that = this;
+        //将当前用户存活状态置为1,存活
+        user1.liveStatus = 1;
+        this.flowerUserList[user1.id].liveStatus = 1;
+
+        //将被比较用户存活状态置为0,输
+        user2.liveStatus = 0;
+        this.flowerUserList[user2.id].liveStatus = 0;
+        result = [user1, user2];
+        //通知所有用户比牌结果
+        this.$socket.emit("contrastResult", { roomId: this.roomId, result });
+        if (this.aliveNumber - 1 == 1) {
+          //比完后只剩一个玩家 本局结束 进行本局结算
+          this.flowerUserList.forEach((user) => {
+            if (user.username != "等待玩家" && user.liveStatus) {
+              //赢家
+              this.roomInfo.lastWinner = user; //设为最近的赢家
+            }
+          });
+          this.$socket.emit("nowGameEnd", {
+            roomId: this.roomId,
+            lastWinner: this.roomInfo.lastWinner,
+          });
+          setTimeout(() => {
+            that.sendNewCards();
+          }, 5000);
+        } else {
+          this.aliveNumber -= 1;
+          this.$socket.emit("aliveNumber", {
+            roomId: this.roomId,
+            aliveNumber: this.aliveNumber,
+          });
+        }
+      } else {
+        //被比较的赢了,当前用户输了
+        user1.liveStatus = 0;
+        this.flowerUserList[user1.id].liveStatus = 0;
+        user2.liveStatus = 1;
+        this.flowerUserList[user2.id].liveStatus = 1;
+        result = [user1, user2];
+        //通知所有用户比牌结果
+        this.$socket.emit("contrastResult", { roomId: this.roomId, result });
+        if (this.aliveNumber - 1 == 1) {
+          this.flowerUserList.forEach((user) => {
+            if (user.username != "等待玩家" && user.liveStatus) {
+              //赢家
+              this.roomInfo.lastWinner = user; //设为最近的赢家
+            }
+          });
+          this.$socket.emit("nowGameEnd", {
+            roomId: this.roomId,
+            lastWinner: this.roomInfo.lastWinner,
+          });
+          setTimeout(() => {
+            this.sendNewCards();
+          }, 5000);
+        } else {
+          this.aliveNumber -= 1;
+          this.$socket.emit("aliveNumber", {
+            roomId: this.roomId,
+            aliveNumber: this.aliveNumber,
+          });
+        }
+      }
     },
 
     //显示比牌结果框
@@ -803,21 +959,37 @@ export default {
     },
 
     //发牌
-    sendPokers(room) {
-      //播放音效
+    sendPokers(pokers) {
       this.sendAudio.load();
       this.sendAudio.play();
+      var that = this;
       //计算房间内玩家的数量
-      this.initData();
+      console.log(this.userNumber);
+      this.userNumber = 0;
+      that.flowerUserList.forEach((user) => {
+        if (user.username != "等待玩家") {
+          that.userNumber += 1;
+        }
+      });
       this.aliveNumber = this.userNumber;
-      //更新房间信息
-      this.roomInfo = room.roomInfo;
-      //更新玩家信息
-      for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i] = room.flowerUserList[i];
+      var lastCards = 52;
+      lastCards = lastCards - that.userNumber * 3;
+      console.log(that.flowerUserList);
+      while (pokers.length > lastCards) {
+        //只要牌堆的牌大于应该剩余牌数，玩家继续摸牌
+        for (let i = 0; i < that.userNumber; i++) {
+          //玩家3人轮流摸牌
+          that.flowerUserList[i].card.push(pokers.pop());
+        }
       }
-      console.log(room);
-      console.log(this.roomInfo);
+      this.roomInfo.status = 1;
+      this.flowerUserList.forEach((user) => {
+        if (user.username != "等待玩家") {
+          user.liveStatus = 1;
+          user.cardStatus = 0;
+          user.cardType = judge(user.card);
+        }
+      });
     },
 
     //activeUser
@@ -826,21 +998,47 @@ export default {
       this.roomInfo.activeUser.username = activeUser.username;
     },
     //跟注
-    follow(room) {
-      //播放音效
+    follow(coinNum) {
       this.sendAudio.src = this.optionAudioList.follow;
       this.sendAudio.load();
       this.sendAudio.play();
       this.initData();
+      let bottomCoin = this.roomInfo.bottomCoin;
+      let activeUserId = this.roomInfo.activeUser.id;
 
-      //更新房间信息
-      this.roomInfo = room.roomInfo;
-      //更新玩家信息
-      for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i] = room.flowerUserList[i];
+      if (coinNum == null) {
+        // bottomCoin = this.roomInfo.bottomCoin;
+        //只选择了跟注,则跟注目前的底分倍数
+        if (this.flowerUserList[activeUserId].cardStatus) {
+          //看牌跟注
+          this.flowerUserList[activeUserId].coin -= bottomCoin * 2;
+          this.flowerUserList[activeUserId].isDown += bottomCoin * 2;
+          this.roomInfo.coinPool += bottomCoin * 2;
+        } else {
+          //闷牌跟注
+          this.flowerUserList[activeUserId].coin -= bottomCoin;
+          this.flowerUserList[activeUserId].isDown += bottomCoin;
+          this.roomInfo.coinPool += bottomCoin;
+        }
+      } else {
+        //加倍
+        if (this.flowerUserList[activeUserId].cardStatus) {
+          //看牌加倍
+          bottomCoin = coinNum / 2;
+          this.flowerUserList[activeUserId].coin -= coinNum;
+          this.flowerUserList[activeUserId].isDown += coinNum;
+          this.roomInfo.coinPool += coinNum;
+        } else {
+          //闷牌加倍
+          bottomCoin = coinNum;
+          this.flowerUserList[activeUserId].coin -= coinNum;
+          this.flowerUserList[activeUserId].isDown += coinNum;
+          this.roomInfo.coinPool += coinNum;
+        }
       }
 
       let activeId = this.roomInfo.activeUser.id;
+
       let followUserImg = document.getElementsByClassName(
         "coin-follow" + activeId
       );
@@ -851,7 +1049,9 @@ export default {
       }
       var plusOrMinus = Math.random() < 0.5 ? -1 : 1; //随机+1或-1
       console.log("正负只", plusOrMinus);
+
       var img = document.createElement("img"); //创建一个标签
+
       let transX = 0;
       let transY = 0;
       let rotateAngle = randomNum(0, 360);
@@ -884,54 +1084,61 @@ export default {
           transX = randomNum(400, 600);
           transY = randomNum(100, 200);
       }
+      // img.src = "~assets/images/coin_20.jpg";
       img.src = this.coin20;
       img.style.width = "1rem";
       img.style.height = "1rem";
       img.style.position = "absolute";
       followUserImg[0].appendChild(img); //放到指定的id里
+      console.log(followUserImg[0]);
+
       setTimeout(() => {
         img.style.width = "3rem";
         img.style.height = "3rem";
         img.style.transition = "1" + "s";
+
         img.style.transform = `scale(.6) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
+
+        // img.style.transform = `scale(.6) translate(28rem,5rem) rotate(${rotateAngle}deg) `;
+
+        console.log("偏移量x", activeId);
+        console.log("偏移量x", transX);
+        console.log("偏移量y", transY);
       }, 20);
+
+      while (
+        !this.flowerUserList[(activeId + 1) % this.userNumber].liveStatus
+      ) {
+        activeId += 1;
+      }
+      this.roomInfo.activeUser.id = (activeId + 1) % this.userNumber;
+      this.roomInfo.activeUser.username =
+        this.flowerUserList[(activeId + 1) % this.userNumber].username;
     },
 
     //看牌
-    seeCard(room) {
-      //播放音效
+    seeCard(activeUserId) {
       this.sendAudio.src = this.optionAudioList.kanpai;
       this.sendAudio.load();
       this.sendAudio.play();
-
-      this.roomInfo = room.roomInfo;
-      //更新玩家信息
-      for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i] = room.flowerUserList[i];
-      }
-      let activeUserId = room.roomInfo.activeUser.id;
-
-      let seeUser = this.flowerUserList.filter((user) => {
-        return user.id == activeUserId;
-      })[0];
-      for (let i = 0; i < seeUser.card.length; i++) {
-        seeUser.card[i].path = require("../../assets/images" +
-          seeUser.card[i].path.replace("../../assets/images", ""));
-      }
+      this.flowerUserList[this.roomInfo.activeUser.id].cardStatus = 1;
     },
 
     //弃牌
-    loseCard(data) {
-      //还有存活玩家 弃牌只需更改弃牌用户状态和房间信息
+    loseCard(activeUser) {
       this.sendAudio.src = this.optionAudioList.qipai;
       this.sendAudio.load();
       this.sendAudio.play();
-
-      let loseId = data.loseId;
-      this.flowerUserList.filter((user) => {
-        return (user.id = loseId);
-      })[0].liveStatus = 0;
-      this.roomInfo = data.room.roomInfo;
+      let activeId = this.roomInfo.activeUser.id;
+      this.flowerUserList[activeId].liveStatus = 0;
+      while (
+        !this.flowerUserList[(activeId + 1) % this.userNumber].liveStatus
+      ) {
+        activeId += 1;
+      }
+      this.roomInfo.activeUser.id = (activeId + 1) % this.userNumber;
+      this.roomInfo.activeUser.username =
+        this.flowerUserList[(activeId + 1) % this.userNumber].username;
     },
 
     //存活玩家数
@@ -947,37 +1154,62 @@ export default {
     },
 
     //比牌结果
-    contrastResult(data) {
-      //仍有玩家存活只需更新败者的存活状态和房间信息
-      this.roomInfo = data.room.roomInfo;
-      this.flowerUserList.filter((user) => {
-        return user.username == data.loser.username;
-      })[0].liveStatus = 0;
-      this.showMessage(data.winner.username + "赢了");
+    contrastResult(result) {
+      //发起比牌的人要减钱
+      this.flowerUserList[result[0].id].coin -= this.roomInfo.bottomCoin * 2;
+      //锅里加
+      this.roomInfo.coinPool += this.roomInfo.bottomCoin * 2;
+
+      if (result[0].liveStatus) {
+        this.flowerUserList[result[0].id].liveStatus = 1;
+        this.flowerUserList[result[1].id].liveStatus = 0;
+        this.winner = this.flowerUserList[result[0].id];
+      } else {
+        this.flowerUserList[result[1].id].liveStatus = 1;
+        this.flowerUserList[result[0].id].liveStatus = 0;
+        this.winner = this.flowerUserList[result[1].id];
+      }
+      let activeId = this.roomInfo.activeUser.id;
+      while (
+        !this.flowerUserList[(activeId + 1) % this.userNumber].liveStatus
+      ) {
+        activeId += 1;
+      }
+      this.roomInfo.activeUser.id = (activeId + 1) % this.userNumber;
+      this.roomInfo.activeUser.username =
+        this.flowerUserList[(activeId + 1) % this.userNumber].username;
+      this.roomInfo.status = 1;
+      this.showMessage(this.winner.username + "赢了");
     },
 
     //当前局结束
-    nowGameEnd(data) {
+    nowGameEnd(winner) {
       this.sendAudio.src = this.optionAudioList.gameFinish;
       this.sendAudio.load();
       this.sendAudio.play();
 
-      this.roomInfo = data.room.roomInfo;
-      this.flowerUserList.filter((user) => {
-        return user.username == data.loser.username;
-      })[0].liveStatus = 0;
+      for (let i = 0; i < this.flowerUserList.length; i++) {
+        if (this.flowerUserList[i].username == winner.username) {
+          console.log("结算之前的钱包", this.flowerUserList[i].coin);
+          console.log("锅里的钱", this.roomInfo.coinPool);
 
+          this.flowerUserList[i].coin += this.roomInfo.coinPool; //赢家的钱加上锅里的
+
+          console.log("结算之后的钱包", this.flowerUserList[i].coin);
+        }
+      }
+
+      this.roomInfo.coinPool = 0; //锅里的钱置零
+      this.roomInfo.lastWinner = winner; //最近的赢家
       this.alertMessage =
-        this.roomInfo.lastWinner.username +
-        "赢了!本局已结束,5秒后自动开始下一局!";
+        winner.username + "赢了!本局已结束,5秒后自动开始下一局!";
       this.showAlertMessage = true;
     },
 
     //非首局发牌
-    sendNewCards(room) {
-      //删除上局扔的筹码图片
+    sendNewCards(flowerUserList) {
       let followUserImg = document.getElementsByClassName("coin-follow");
-      for (let i = 0; i < this.flowerUserList.length; i++) {
+      for (let i = 0; i < flowerUserList.length; i++) {
         var child = followUserImg[i].lastElementChild;
         while (child) {
           followUserImg[i].removeChild(child);
@@ -986,15 +1218,42 @@ export default {
       }
       //取消显示alertMessage
       this.showAlertMessage = false;
-
-      this.roomInfo = room.roomInfo;
-      for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i].card.splice(
-          0,
-          this.flowerUserList[i].card.length
+      //局数加1
+      this.roomInfo.gamesNumber += 1;
+      //计算玩家数量
+      this.initData();
+      //设置存活玩家数量
+      this.aliveNumber = this.userNumber;
+      //设置为开局状态
+      this.roomInfo.status = 1;
+      //重置底分
+      this.roomInfo.bottomCoin = 1;
+      //重置锅底
+      this.roomInfo.coinPool = 0;
+      //重置用户的信息
+      for (let i = 0; i < this.userNumber; i++) {
+        this.flowerUserList[i].cardStatus = 0; //设置还未看牌
+        this.flowerUserList[i].liveStatus = 1; //设置存活
+        this.flowerUserList[i].card = [];
+        this.flowerUserList[i].card.push(...flowerUserList[i].card); //设置新一局的牌
+        this.flowerUserList[i].cardType = judge(this.flowerUserList[i].card);
+        console.log(
+          this.flowerUserList[i].username,
+          "牌" +
+            this.flowerUserList[i].card[0].name +
+            this.flowerUserList[i].card[1].name +
+            this.flowerUserList[i].card[2].name +
+            "牌型为" +
+            this.flowerUserList[i].cardType
         );
-        this.flowerUserList[i] = room.flowerUserList[i];
       }
+      //设置上一局的赢家的下家为先手
+      let activeUser =
+        this.flowerUserList[
+          (this.roomInfo.lastWinner.id + 1) % this.userNumber
+        ];
+      this.roomInfo.activeUser.username = activeUser.username;
+      this.roomInfo.activeUser.id = activeUser.id;
     },
 
     //锅里的钱
@@ -1031,7 +1290,13 @@ body {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
+.inout-msg {
+  font-size: (20rem / @baseFont);
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, 0);
+}
 .message {
   width: (130rem / @baseFont);
   height: (130rem / @baseFont);
