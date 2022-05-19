@@ -17,7 +17,7 @@ import 'assets/bootstrap-5.1.3-dist/css/bootstrap.css'
 import 'assets/bootstrap-5.1.3-dist/js/bootstrap.js'
 Vue.prototype.$ = $
 Vue.use(new VueSocketIO({
-  // debug: true,
+  debug: true,
   // connection: 'http://212.129.235.112:3000/',
   // connection: 'http://flower.pushyzheng.com/',
   connection: 'http://localhost:3000/',

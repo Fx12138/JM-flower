@@ -28,7 +28,7 @@ a {
 
 @media screen and (min-width: 384px) {
   html {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 
@@ -70,7 +70,7 @@ a {
 
 @media screen and (min-width: 750px) {
   html {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 

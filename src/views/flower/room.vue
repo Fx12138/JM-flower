@@ -479,7 +479,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -487,7 +487,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -495,44 +495,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
-            },
-          ],
-          cardType: null,
-          coin: 0,
-          isDown: 0,
-          cardStatus: 0, //是否看牌 0未看,1看了
-          liveStatus: 0, //是否弃牌或输 0输,1活着
-        },
-        {
-          id: 0,
-          avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
-          username: "等待玩家",
-          card: [
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
+              path: null,
             },
           ],
           cardType: null,
@@ -553,7 +516,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -561,7 +524,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -569,44 +532,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
-            },
-          ],
-          cardType: null,
-          coin: 0,
-          isDown: 0,
-          cardStatus: 0, //是否看牌 0未看,1看了
-          liveStatus: 0, //是否弃牌或输 0输,1活着
-        },
-        {
-          id: 0,
-          avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
-          username: "等待玩家",
-          card: [
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: "",
+              path: null,
             },
           ],
           cardType: null,
@@ -627,7 +553,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -635,7 +561,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -643,7 +569,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
           ],
           cardType: null,
@@ -664,7 +590,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -672,7 +598,7 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
             },
             {
               color: "",
@@ -680,7 +606,81 @@ export default {
               name: "",
               order: null,
               power: null,
-              path: "",
+              path: null,
+            },
+          ],
+          cardType: null,
+          coin: 0,
+          isDown: 0,
+          cardStatus: 0, //是否看牌 0未看,1看了
+          liveStatus: 0, //是否弃牌或输 0输,1活着
+        },
+        {
+          id: 0,
+          avatar:
+            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+          username: "等待玩家",
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
+            },
+          ],
+          cardType: null,
+          coin: 0,
+          isDown: 0,
+          cardStatus: 0, //是否看牌 0未看,1看了
+          liveStatus: 0, //是否弃牌或输 0输,1活着
+        },
+        {
+          id: 0,
+          avatar:
+            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+          username: "等待玩家",
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: null,
             },
           ],
           cardType: null,
@@ -867,6 +867,7 @@ export default {
 
     //选择一个进行比牌
     chooseOne() {
+      this.initData();
       let seeUser = 0;
       for (let i = 0; i < this.userNumber; i++) {
         if (
@@ -911,40 +912,43 @@ export default {
   },
   sockets: {
     //用户进入斗地主房间
-    inFlowerRoom: function (flowerUserList) {
-      if (flowerUserList.code == 200) {
-        let newUsername =
-          flowerUserList.data[flowerUserList.data.length - 1].username;
+    inFlowerRoom: function (data) {
+      if (data.code == 200) {
+        let newUsername = data.data.newUser.username;
         this.showMessage(newUsername + "进入了房间");
-        for (let i = 0; i < flowerUserList.data.length; i++) {
-          this.flowerUserList[i].id = flowerUserList.data[i].id;
-          this.flowerUserList[i].avatar = flowerUserList.data[i].avatar;
-          this.flowerUserList[i].username = flowerUserList.data[i].username;
-          this.flowerUserList[i].cardType = flowerUserList.data[i].cardType;
-          this.flowerUserList[i].coin = flowerUserList.data[i].coin;
-          this.flowerUserList[i].isDown = flowerUserList.data[i].isDown;
-          this.flowerUserList[i].cardStatus = flowerUserList.data[i].cardStatus;
-          this.flowerUserList[i].liveStatus = flowerUserList.data[i].liveStatus;
+        for (let i = 0; i < data.data.flowerUserList.length; i++) {
+          this.flowerUserList[i].id = data.data.flowerUserList[i].id;
+          this.flowerUserList[i].avatar = data.data.flowerUserList[i].avatar;
+          this.flowerUserList[i].username =
+            data.data.flowerUserList[i].username;
+          this.flowerUserList[i].cardType =
+            data.data.flowerUserList[i].cardType;
+          this.flowerUserList[i].coin = data.data.flowerUserList[i].coin;
+          this.flowerUserList[i].isDown = data.data.flowerUserList[i].isDown;
+          this.flowerUserList[i].cardStatus =
+            data.data.flowerUserList[i].cardStatus;
+          this.flowerUserList[i].liveStatus =
+            data.data.flowerUserList[i].liveStatus;
 
           if (this.flowerUserList[i].cardStatus) {
-            for (let j = 0; j < flowerUserList.data[i].card.length; j++) {
+            for (let j = 0; j < data.data.flowerUserList[i].card.length; j++) {
               this.flowerUserList[i].card[
                 j
               ].path = require("../../assets/images" +
-                flowerUserList.data[i].card[j].path.replace(
+                data.data.flowerUserList[i].card[j].path.replace(
                   "../../assets/images",
                   ""
                 ));
               this.flowerUserList[i].card[j].color =
-                flowerUserList.data[i].card[j].color;
+                data.data.flowerUserList[i].card[j].color;
               this.flowerUserList[i].card[j].number =
-                flowerUserList.data[i].card[j].number;
+                data.data.flowerUserList[i].card[j].number;
               this.flowerUserList[i].card[j].name =
-                flowerUserList.data[i].card[j].name;
+                data.data.flowerUserList[i].card[j].name;
               this.flowerUserList[i].card[j].order =
-                flowerUserList.data[i].card[j].order;
+                data.data.flowerUserList[i].card[j].order;
               this.flowerUserList[i].card[j].power =
-                flowerUserList.data[i].card[j].power;
+                data.data.flowerUserList[i].card[j].power;
             }
           }
         }
@@ -1064,20 +1068,23 @@ export default {
 
       this.roomInfo = room.roomInfo;
       //更新玩家信息
-      for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i].coin = room.flowerUserList[i].coin;
-        this.flowerUserList[i].isDown = room.flowerUserList[i].isDown;
-        this.flowerUserList[i].cardStatus = room.flowerUserList[i].cardStatus;
-        this.flowerUserList[i].liveStatus = room.flowerUserList[i].liveStatus;
-      }
+
       let activeUserId = room.roomInfo.activeUser.id;
 
       let seeUser = this.flowerUserList.filter((user) => {
         return user.id == activeUserId;
       })[0];
-      for (let i = 0; i < seeUser.card.length; i++) {
-        seeUser.card[i].path = require("../../assets/images" +
-          seeUser.card[i].path.replace("../../assets/images", ""));
+      for (let j = 0; j < seeUser.card.length; j++) {
+        console.log(seeUser.card[j].path);
+
+        seeUser.card[j].path = require("../../assets/images" +
+          seeUser.card[j].path.replace("../../assets/images", ""));
+      }
+      for (let i = 0; i < room.flowerUserList.length; i++) {
+        this.flowerUserList[i].coin = room.flowerUserList[i].coin;
+        this.flowerUserList[i].isDown = room.flowerUserList[i].isDown;
+        this.flowerUserList[i].cardStatus = room.flowerUserList[i].cardStatus;
+        this.flowerUserList[i].liveStatus = room.flowerUserList[i].liveStatus;
       }
     },
 
@@ -1187,16 +1194,20 @@ body {
 }
 
 .message {
-  width: (130rem / @baseFont);
-  height: (130rem / @baseFont);
-  border: red solid 1px;
+  width: (150rem / @baseFont);
+  height: (135rem / @baseFont);
+  border: black solid 1px;
   background-color: silver;
+  opacity: 0.8;
   position: absolute;
   top: (10rem / @baseFont);
   left: (10rem / @baseFont);
   z-index: 99999;
   margin: auto;
-  font-size: (17rem / @baseFont);
+  div {
+    font-size: (1rem / @baseFont);
+  }
+
   :nth-child(1) {
     font-size: (20rem / @baseFont);
     margin-bottom: (15rem / @baseFont);
@@ -1283,7 +1294,8 @@ body {
 .user0-box {
   position: fixed;
   left: 2%;
-  top: 38%;
+  top: 35%;
+  // top: (175rem / @baseFont);
   display: flex;
 }
 .user1-box {
@@ -1301,8 +1313,9 @@ body {
 .user3-box {
   position: fixed;
   right: 2%;
-  top: 38%;
-  // bottom: (240rem / @baseFont);
+  top: 35%;
+  // bottom: (180rem / @baseFont);
+  // top: (175rem / @baseFont);
   display: flex;
 }
 .user4-box {
