@@ -472,7 +472,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -484,7 +509,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -496,7 +546,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -508,7 +583,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -520,7 +620,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -532,7 +657,32 @@ export default {
           avatar:
             "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
           username: "等待玩家",
-          card: [],
+          card: [
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+            {
+              color: "",
+              number: null,
+              name: "",
+              order: null,
+              power: null,
+              path: "",
+            },
+          ],
           cardType: null,
           coin: 0,
           isDown: 0,
@@ -565,17 +715,17 @@ export default {
     };
   },
   watch: {
-    flowerUserList: {
-      handler(newValue, oldValue) {
-        this.flowerUserList.filter((user) => {
-          if ((user.username = this.userInfo.username)) {
-            this.userInfo = user;
-          }
-        });
-      },
-      immediate: true,
-      deep: true,
-    },
+    // flowerUserList: {
+    //   handler(newValue, oldValue) {
+    //     console.log("改变了");
+    //     let user = newValue.filter((user) => {
+    //       return user.username == this.userInfo.username;
+    //     });
+    //     this.userInfo = user;
+    //   },
+    //   immediate: false,
+    //   deep: true,
+    // },
   },
   computed: {
     roomId() {
@@ -611,17 +761,49 @@ export default {
     getOriginData() {
       getRoomById(this.roomId).then((res) => {
         this.roomInfo = res.data.data.roomInfo;
+        let curUsername = this.userInfo.username;
+        this.userInfo = res.data.data.flowerUserList.filter((user) => {
+          return user.username == curUsername;
+        })[0];
         for (let i = 0; i < res.data.data.flowerUserList.length; i++) {
-          this.flowerUserList[i] = res.data.data.flowerUserList[i];
+          this.flowerUserList[i].id = res.data.data.flowerUserList[i].id;
+          this.flowerUserList[i].avatar =
+            res.data.data.flowerUserList[i].avatar;
+          this.flowerUserList[i].username =
+            res.data.data.flowerUserList[i].username;
+          this.flowerUserList[i].cardType =
+            res.data.data.flowerUserList[i].cardType;
+          this.flowerUserList[i].coin = res.data.data.flowerUserList[i].coin;
+          this.flowerUserList[i].isDown =
+            res.data.data.flowerUserList[i].isDown;
+          this.flowerUserList[i].cardStatus =
+            res.data.data.flowerUserList[i].cardStatus;
+          this.flowerUserList[i].liveStatus =
+            res.data.data.flowerUserList[i].liveStatus;
+
           if (this.flowerUserList[i].cardStatus) {
-            for (let i = 0; i < this.flowerUserList[i].card.length; i++) {
+            for (
+              let j = 0;
+              j < res.data.data.flowerUserList[i].card.length;
+              j++
+            ) {
               this.flowerUserList[i].card[
-                i
+                j
               ].path = require("../../assets/images" +
-                this.flowerUserList[i].card[i].path.replace(
+                res.data.data.flowerUserList[i].card[j].path.replace(
                   "../../assets/images",
                   ""
                 ));
+              this.flowerUserList[i].card[j].color =
+                res.data.data.flowerUserList[i].card[j].color;
+              this.flowerUserList[i].card[j].number =
+                res.data.data.flowerUserList[i].card[j].number;
+              this.flowerUserList[i].card[j].name =
+                res.data.data.flowerUserList[i].card[j].name;
+              this.flowerUserList[i].card[j].order =
+                res.data.data.flowerUserList[i].card[j].order;
+              this.flowerUserList[i].card[j].power =
+                res.data.data.flowerUserList[i].card[j].power;
             }
           }
         }
@@ -735,8 +917,36 @@ export default {
           flowerUserList.data[flowerUserList.data.length - 1].username;
         this.showMessage(newUsername + "进入了房间");
         for (let i = 0; i < flowerUserList.data.length; i++) {
-          this.flowerUserList[i].username = flowerUserList.data[i].username;
+          this.flowerUserList[i].id = flowerUserList.data[i].id;
           this.flowerUserList[i].avatar = flowerUserList.data[i].avatar;
+          this.flowerUserList[i].username = flowerUserList.data[i].username;
+          this.flowerUserList[i].cardType = flowerUserList.data[i].cardType;
+          this.flowerUserList[i].coin = flowerUserList.data[i].coin;
+          this.flowerUserList[i].isDown = flowerUserList.data[i].isDown;
+          this.flowerUserList[i].cardStatus = flowerUserList.data[i].cardStatus;
+          this.flowerUserList[i].liveStatus = flowerUserList.data[i].liveStatus;
+
+          if (this.flowerUserList[i].cardStatus) {
+            for (let j = 0; j < flowerUserList.data[i].card.length; j++) {
+              this.flowerUserList[i].card[
+                j
+              ].path = require("../../assets/images" +
+                flowerUserList.data[i].card[j].path.replace(
+                  "../../assets/images",
+                  ""
+                ));
+              this.flowerUserList[i].card[j].color =
+                flowerUserList.data[i].card[j].color;
+              this.flowerUserList[i].card[j].number =
+                flowerUserList.data[i].card[j].number;
+              this.flowerUserList[i].card[j].name =
+                flowerUserList.data[i].card[j].name;
+              this.flowerUserList[i].card[j].order =
+                flowerUserList.data[i].card[j].order;
+              this.flowerUserList[i].card[j].power =
+                flowerUserList.data[i].card[j].power;
+            }
+          }
         }
       } else {
         alert(flowerUserList.msg);
@@ -783,7 +993,10 @@ export default {
       this.roomInfo = room.roomInfo;
       //更新玩家信息
       for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i] = room.flowerUserList[i];
+        this.flowerUserList[i].coin = room.flowerUserList[i].coin;
+        this.flowerUserList[i].isDown = room.flowerUserList[i].isDown;
+        this.flowerUserList[i].cardStatus = room.flowerUserList[i].cardStatus;
+        this.flowerUserList[i].liveStatus = room.flowerUserList[i].liveStatus;
       }
 
       let activeId = this.roomInfo.activeUser.id;
@@ -852,7 +1065,10 @@ export default {
       this.roomInfo = room.roomInfo;
       //更新玩家信息
       for (let i = 0; i < room.flowerUserList.length; i++) {
-        this.flowerUserList[i] = room.flowerUserList[i];
+        this.flowerUserList[i].coin = room.flowerUserList[i].coin;
+        this.flowerUserList[i].isDown = room.flowerUserList[i].isDown;
+        this.flowerUserList[i].cardStatus = room.flowerUserList[i].cardStatus;
+        this.flowerUserList[i].liveStatus = room.flowerUserList[i].liveStatus;
       }
       let activeUserId = room.roomInfo.activeUser.id;
 
@@ -906,6 +1122,14 @@ export default {
       this.flowerUserList.filter((user) => {
         return user.username == data.loser.username;
       })[0].liveStatus = 0;
+      for (let i = 0; i < data.room.flowerUserList.length; i++) {
+        this.flowerUserList[i].coin = data.room.flowerUserList[i].coin;
+        this.flowerUserList[i].isDown = data.room.flowerUserList[i].isDown;
+        this.flowerUserList[i].cardStatus =
+          data.room.flowerUserList[i].cardStatus;
+        this.flowerUserList[i].liveStatus =
+          data.room.flowerUserList[i].liveStatus;
+      }
 
       this.alertMessage =
         this.roomInfo.lastWinner.username +
