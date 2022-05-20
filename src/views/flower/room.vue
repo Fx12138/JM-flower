@@ -23,7 +23,7 @@
     <!-- 当前用户计时器 -->
     <div
       class="login-user-count-time"
-      v-show="roomInfo.activeUser.id == loginUser.id"
+      v-show="roomInfo.activeUser.id == loginUser.id && roomInfo.status != 3"
     >
       <img src="../../assets/clock.png" alt="" />{{ countTime }}
     </div>
@@ -65,7 +65,8 @@
         slot="countTime"
         v-show="
           roomInfo.activeUser.id == flowerUserList[1].id &&
-          flowerUserList[1].username != loginUser.username
+          flowerUserList[1].username != loginUser.username &&
+          roomInfo.status != 3
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -83,7 +84,8 @@
         slot="countTime"
         v-show="
           roomInfo.activeUser.id == flowerUserList[2].id &&
-          flowerUserList[2].username != loginUser.username
+          flowerUserList[2].username != loginUser.username &&
+          roomInfo.status != 3
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -101,7 +103,8 @@
         slot="countTime"
         v-show="
           roomInfo.activeUser.id == flowerUserList[3].id &&
-          flowerUserList[3].username != loginUser.username
+          flowerUserList[3].username != loginUser.username &&
+          roomInfo.status != 3
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -940,6 +943,8 @@ export default {
 
       //更新房间信息
       this.roomInfo = data.room.roomInfo;
+      console.log(this.roomInfo);
+
       let loserUser = this.flowerUserList.filter((user) => {
         return user.username == data.loser.username;
       })[0];
