@@ -1,5 +1,7 @@
 <template>
   <div class="user-box" :class="userInfo.liveStatus ? '' : 'lose'">
+    <div class="coin-area"><slot name="coin-follow"></slot></div>
+
     <!-- 用户基本信息 -->
     <div class="user-info-box">
       <!-- 用户头像 -->
@@ -123,6 +125,14 @@ export default {
   height: (130rem / @baseFont);
   display: flex;
 
+  //扔硬币产生的区域
+  .coin-area {
+    position: relative;
+    .coin-follow {
+      position: absolute;
+    }
+  }
+
   .user-info-box {
     flex: 1;
     display: flex;
@@ -152,6 +162,8 @@ export default {
     }
     .user-username {
       width: 100%;
+      // background-color: aliceblue;
+      color: white;
       height: (20rem / @baseFont);
       line-height: (20rem / @baseFont);
       overflow: hidden;

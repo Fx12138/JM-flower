@@ -18,12 +18,24 @@
         placeholder="请输入用户名"
       />
     </div>
+
     <div class="log-option-button">
       <button type="primary" @click="login(ruleForm)" class="btn btn-primary">
         登录
       </button>
       <button type="primary" class="btn btn-primary">注册</button>
     </div>
+
+    <!-- <div class="box">
+      <div class="main-box">
+        <div class="login">登陆界面</div>
+        <div class="register">注册界面</div>
+      </div>
+      <div class="button-box">
+        <button @click="change('login')">登录</button>
+        <button @click="change('register')">注册</button>
+      </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -57,6 +69,31 @@ export default {
         }
       });
     },
+    change(page) {
+      switch (page) {
+        case "login":
+          // document
+          //   .getElementsByClassName("main-box")[0]
+          //   .classList.remove("registerPage");
+          // document
+          //   .getElementsByClassName("main-box")[0]
+          //   .classList.add("loginPage");
+          document.getElementsByClassName("main-box")[0].style.transform =
+            "perspective(900px) rotateY(90deg);";
+          break;
+        case "register":
+          // document
+          //   .getElementsByClassName("main-box")[0]
+          //   .classList.remove("loginPage");
+          // document
+          //   .getElementsByClassName("main-box")[0]
+          //   .classList.add("registerPage");
+
+          document.getElementsByClassName("main-box")[0].style.transform =
+            "perspective(900px) rotateY(40deg);";
+          break;
+      }
+    },
   },
   components: {},
   created() {
@@ -81,7 +118,6 @@ body {
 }
 
 .main-login {
-  margin-top: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -113,13 +149,58 @@ body {
       color: aliceblue;
     }
   }
-}
-.log-option-button {
-  margin-top: (20rem / @baseFont);
-  button {
-    margin: (20rem / @baseFont);
-    width: (100rem / @baseFont);
-    font-weight: 300;
+  .log-option-button {
+    margin-top: (20rem / @baseFont);
+    button {
+      margin: (20rem / @baseFont);
+      width: (100rem / @baseFont);
+      font-weight: 300;
+    }
   }
 }
+
+.box {
+  position: relative;
+  .main-box {
+    width: (200rem / @baseFont);
+    height: (500rem / @baseFont);
+    position: relative;
+    transform-style: preserve-3d;
+    transform: perspective(900px);
+    transition: 2s;
+    .loginPage {
+      transform: perspective(900px) rotateY(0deg);
+    }
+    .registerPage {
+      transform: perspective(900px) rotateY(180deg);
+    }
+
+    div {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      backface-visibility: hidden;
+      color: white;
+    }
+    .login {
+      background-color: aquamarine;
+    }
+    .register {
+      background-color: burlywood;
+      transform: rotateY(180deg);
+    }
+  }
+  .button-box {
+    position: absolute;
+    width: 100%;
+    bottom: (20rem / @baseFont);
+    text-align: center;
+  }
+}
+// .box:hover .main-box {
+//   transform: perspective(900px) rotateY(180deg);
+// }
 </style>

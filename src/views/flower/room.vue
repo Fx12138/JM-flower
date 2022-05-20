@@ -29,10 +29,8 @@
     </div>
 
     <!-- 当前用户 -->
-    <flower-user-com
-      class="curUser"
-      :userInfo="loginUser"
-      :roomInfo="roomInfo"
+    <flower-user-com class="curUser" :userInfo="loginUser" :roomInfo="roomInfo"
+      ><div slot="coin-follow" class="curUser-follow coin-follow"></div
     ></flower-user-com>
 
     <flower-user-com
@@ -40,6 +38,7 @@
       :userInfo="flowerUserList[0]"
       :roomInfo="roomInfo"
     >
+      <div slot="coin-follow" class="user0-follow coin-follow"></div>
       <!-- 倒计时 -->
       <div
         class="active"
@@ -59,6 +58,7 @@
       :userInfo="flowerUserList[1]"
       :roomInfo="roomInfo"
     >
+      <div slot="coin-follow" class="user1-follow coin-follow"></div>
       <!-- 倒计时 -->
       <div
         class="active"
@@ -78,6 +78,7 @@
       :userInfo="flowerUserList[2]"
       :roomInfo="roomInfo"
     >
+      <div slot="coin-follow" class="user2-follow coin-follow"></div>
       <!-- 倒计时 -->
       <div
         class="active"
@@ -97,6 +98,7 @@
       :userInfo="flowerUserList[3]"
       :roomInfo="roomInfo"
     >
+      <div slot="coin-follow" class="user3-follow coin-follow"></div>
       <!-- 倒计时 -->
       <div
         class="active"
@@ -111,7 +113,17 @@
       </div>
     </flower-user-com>
 
-    <div
+    <!-- 操作按钮组件 -->
+    <operate-bar
+      class="operate-bar"
+      :roomInfo="roomInfo"
+      v-show="
+        loginUser.username == roomInfo.activeUser.username &&
+        roomInfo.status == 1
+      "
+    ></operate-bar>
+
+    <!-- <div
       class="operate-box"
       v-if="
         loginUser.username == roomInfo.activeUser.username &&
@@ -141,7 +153,7 @@
         <button @click="chooseOne">比牌</button>
         <button @click="loseCard">弃牌</button>
       </div>
-    </div>
+    </div> -->
     <div class="fast-message-button" @click="showFastList = !showFastList">
       发消息
     </div>
@@ -201,8 +213,10 @@ import { getRoomById } from "../../network/room";
 import roomInfo from "components/room/roomInfo.vue";
 import fastMessageList from "../../components/room/fastMessageList.vue";
 import flowerUserCom from "components/user/flowerUserCom.vue";
+import operateBar from "components/room/operateBar.vue";
+import loginVue from "../login/login.vue";
 export default {
-  components: { fastMessageList, roomInfo, flowerUserCom },
+  components: { fastMessageList, roomInfo, flowerUserCom, operateBar },
   data() {
     return {
       loginUser: {
@@ -259,80 +273,6 @@ export default {
         userNumber: 0,
       },
       flowerUserList: [
-        {
-          id: 10,
-          avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
-          username: "等待玩家",
-          card: [
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-          ],
-          cardType: null,
-          coin: 0,
-          isDown: 0,
-          cardStatus: 0, //是否看牌 0未看,1看了
-          liveStatus: 0, //是否弃牌或输 0输,1活着
-        },
-        {
-          id: 10,
-          avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
-          username: "等待玩家",
-          card: [
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-            {
-              color: "",
-              number: null,
-              name: "",
-              order: null,
-              power: null,
-              path: null,
-            },
-          ],
-          cardType: null,
-          coin: 0,
-          isDown: 0,
-          cardStatus: 0, //是否看牌 0未看,1看了
-          liveStatus: 0, //是否弃牌或输 0输,1活着
-        },
         {
           id: 10,
           avatar:
@@ -651,8 +591,6 @@ export default {
 
     //看牌
     seeCard() {
-      this.loginUser.cardStatus = 1;
-      this.flowerUserList[this.roomInfo.activeUser.id].cardStatus = 1;
       this.$socket.emit("seeCard", {
         roomId: this.roomId,
         activeUserId: this.roomInfo.activeUser.id,
@@ -778,6 +716,64 @@ export default {
       this.sendAudio.play();
       this.initData();
 
+      // 扔筹码
+      let activeId = this.roomInfo.activeUser.id;
+      let userIndex = this.flowerUserList.findIndex(
+        (user, index, array) => user.id == activeId
+      );
+      let followUserImg = null;
+      if (userIndex == -1) {
+        followUserImg = document.getElementsByClassName("curUser-follow")[0];
+      } else {
+        followUserImg = document.getElementsByClassName(
+          "user" + userIndex + "-follow"
+        )[0];
+      }
+
+      function randomNum(minNum, maxNum) {
+        var comt = maxNum - minNum + 1;
+        return Math.floor(Math.random() * comt + minNum);
+      }
+      var plusOrMinus = Math.random() < 0.5 ? -1 : 1; //随机+1或-1
+      var img = document.createElement("img"); //创建一个标签
+      let transX = 0;
+      let transY = 0;
+      let rotateAngle = randomNum(0, 360);
+      switch (userIndex) {
+        //20rem 5rem
+        case -1:
+          transX = randomNum(-7, 20);
+          transY = randomNum(-20, -5);
+          break;
+        case 0:
+          transX = randomNum(30, 50);
+          transY = randomNum(0, 6) * plusOrMinus;
+          break;
+        case 1:
+          transX = randomNum(10, 40);
+          transY = randomNum(10, 27);
+          break;
+        case 2:
+          transX = randomNum(-10, -30);
+          transY = randomNum(7, 27);
+          break;
+        case 3:
+          transX = randomNum(-27, -40);
+          transY = randomNum(0, 6);
+          break;
+      }
+      img.src = this.coin20;
+      img.style.width = "1rem";
+      img.style.height = "1rem";
+      img.style.position = "absolute";
+      followUserImg.appendChild(img); //放到指定的id里
+      setTimeout(() => {
+        img.style.width = "3rem";
+        img.style.height = "3rem";
+        img.style.transition = "1" + "s";
+        img.style.transform = `scale(.6) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
+      }, 20);
+
       //更新房间信息
       this.roomInfo = room.roomInfo;
       //更新玩家信息
@@ -802,61 +798,6 @@ export default {
           this.flowerUserList[i].liveStatus = user.liveStatus;
         }
       }
-
-      // let activeId = this.roomInfo.activeUser.id;
-      // let followUserImg = document.getElementsByClassName(
-      //   "coin-follow" + activeId
-      // );
-
-      // function randomNum(minNum, maxNum) {
-      //   var comt = maxNum - minNum + 1;
-      //   return Math.floor(Math.random() * comt + minNum);
-      // }
-      // var plusOrMinus = Math.random() < 0.5 ? -1 : 1; //随机+1或-1
-      // var img = document.createElement("img"); //创建一个标签
-      // let transX = 0;
-      // let transY = 0;
-      // let rotateAngle = randomNum(0, 360);
-      // switch (activeId) {
-      //   //20rem 5rem
-      //   case 0:
-      //     transX = randomNum(27, 40);
-      //     transY = randomNum(0, 6) * plusOrMinus;
-      //     break;
-      //   case 1:
-      //     transX = randomNum(10, 30);
-      //     transY = randomNum(7, 27);
-      //     break;
-      //   case 2:
-      //     transX = randomNum(-10, -30);
-      //     transY = randomNum(7, 27);
-      //     break;
-      //   case 3:
-      //     transX = randomNum(-27, -40);
-      //     transY = randomNum(0, 6);
-      //     break;
-      //   case 4:
-      //     transX = randomNum(-10, -40);
-      //     transY = randomNum(-20, -5);
-      //     break;
-      //   case 5:
-      //     transX = randomNum(10, 40);
-      //     transY = randomNum(-20, -5);
-      //   default:
-      //     transX = randomNum(400, 600);
-      //     transY = randomNum(100, 200);
-      // }
-      // img.src = this.coin20;
-      // img.style.width = "1rem";
-      // img.style.height = "1rem";
-      // img.style.position = "absolute";
-      // followUserImg[0].appendChild(img); //放到指定的id里
-      // setTimeout(() => {
-      //   img.style.width = "3rem";
-      //   img.style.height = "3rem";
-      //   img.style.transition = "1" + "s";
-      //   img.style.transform = `scale(.6) translate(${transX}rem,${transY}rem) rotate(${rotateAngle}deg) `;
-      // }, 20);
     },
 
     //看牌
@@ -896,11 +837,12 @@ export default {
       this.roomInfo = data.room.roomInfo;
       this.loginUser.cardStatus = data.activeUser.cardStatus;
       for (let j = 0; j < data.activeUser.card.length; j++) {
-        this.loginUser.card[j].path = require("../../assets/images" +
-          data.activeUser.card[j].path.replace("../../assets/images", ""));
         console.log(j);
 
         console.log(this.loginUser.card[j]);
+
+        this.loginUser.card[j].path = require("../../assets/images" +
+          data.activeUser.card[j].path.replace("../../assets/images", ""));
       }
     },
 
@@ -912,9 +854,14 @@ export default {
       this.sendAudio.play();
 
       let loseId = data.loseId;
-      this.flowerUserList.filter((user) => {
-        return user.id == loseId;
-      })[0].liveStatus = 0;
+      if (loseId == this.loginUser.id) {
+        this.loginUser.liveStatus = 0;
+      } else {
+        this.flowerUserList.filter((user) => {
+          return user.id == loseId;
+        })[0].liveStatus = 0;
+      }
+
       this.roomInfo = data.room.roomInfo;
     },
 
@@ -943,8 +890,6 @@ export default {
 
       //更新房间信息
       this.roomInfo = data.room.roomInfo;
-      console.log(this.roomInfo);
-
       let loserUser = this.flowerUserList.filter((user) => {
         return user.username == data.loser.username;
       })[0];
@@ -959,7 +904,6 @@ export default {
       this.loginUser.id = curUser.id;
       this.loginUser.coin = curUser.coin;
       this.loginUser.isDown = curUser.isDown;
-      // this.loginUser.card.splice(0, this.userInfo.card.length);
       this.loginUser.cardStatus = curUser.cardStatus;
       this.loginUser.liveStatus = curUser.liveStatus;
       let userNumber = data.room.flowerUserList.length;
@@ -985,14 +929,14 @@ export default {
     //非首局发牌
     sendNewCards(room) {
       //删除上局扔的筹码图片
-      // let followUserImg = document.getElementsByClassName("coin-follow");
-      // for (let i = 0; i < this.flowerUserList.length; i++) {
-      //   var child = followUserImg[i].lastElementChild;
-      //   while (child) {
-      //     followUserImg[i].removeChild(child);
-      //     child = followUserImg[i].lastElementChild;
-      //   }
-      // }
+      let followUserImg = document.getElementsByClassName("coin-follow");
+      for (let i = 0; i < this.flowerUserList.length; i++) {
+        var child = followUserImg[i].lastElementChild;
+        while (child) {
+          followUserImg[i].removeChild(child);
+          child = followUserImg[i].lastElementChild;
+        }
+      }
       //取消显示alertMessage
       this.showAlertMessage = false;
 
@@ -1004,7 +948,16 @@ export default {
       this.loginUser.id = curUser.id;
       this.loginUser.coin = curUser.coin;
       this.loginUser.isDown = curUser.isDown;
-      this.loginUser.card.splice(0, this.loginUser.card.length);
+      for (let j = 0; j < this.loginUser.card.length; j++) {
+        this.loginUser.card[j].color = null;
+        this.loginUser.card[j].number = null;
+        this.loginUser.card[j].name = null;
+        this.loginUser.card[j].order = null;
+        this.loginUser.card[j].color = null;
+        this.loginUser.card[j].power = null;
+        this.loginUser.card[j].path = null;
+      }
+      // this.loginUser.card.splice(0, this.loginUser.card.length);
       this.loginUser.cardStatus = curUser.cardStatus;
       this.loginUser.liveStatus = curUser.liveStatus;
       let userNumber = room.flowerUserList.length;
@@ -1054,6 +1007,15 @@ body {
   z-index: 99999;
 }
 
+.curUser {
+  width: (320rem / @baseFont);
+  height: (130rem / @baseFont);
+  position: fixed;
+  bottom: 10%;
+  left: 40%;
+  z-index: 999;
+}
+
 .user0 {
   width: (320rem / @baseFont);
   height: (130rem / @baseFont);
@@ -1088,66 +1050,11 @@ body {
   z-index: 999;
 }
 
-.curUser {
-  width: (320rem / @baseFont);
-  height: (130rem / @baseFont);
-  position: fixed;
-  bottom: 10%;
-  left: 40%;
-  z-index: 999;
-}
-
-.operate-box {
+.operate-bar {
   width: 100%;
   height: (60rem / @baseFont);
-  line-height: (60rem / @baseFont);
-  background-color: rgb(32, 32, 32);
   position: fixed;
-  left: (0rem / @baseFont);
-  bottom: (0rem / @baseFont);
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  // align-content: center;
-  flex-wrap: nowrap;
-  .coin-box {
-    display: flex;
-    .money-coin {
-      width: (60rem / @baseFont);
-      height: (60rem / @baseFont);
-      margin-left: (30rem / @baseFont);
-      img {
-        width: (60rem / @baseFont);
-        height: (60rem / @baseFont);
-      }
-    }
-  }
-  .coin-box div {
-    transition: 1s;
-  }
-  .coin-box:hover div {
-    transform: scale(0.8);
-  }
-  .coin-box div:hover {
-    transform: scale(1.1) rotateX(360deg);
-  }
-  .operate-button-box {
-    margin-left: (40rem / @baseFont);
-    display: flex;
-    // justify-content: center;
-    align-items: center;
-    button {
-      height: (50rem / @baseFont);
-      line-height: (50rem / @baseFont);
-      width: (60rem / @baseFont);
-      text-align: center;
-      border-radius: 10%;
-      margin-left: (20rem / @baseFont);
-      background-color: darkgray;
-      border: none;
-      // transition: 0.7s;
-    }
-  }
+  bottom: 0;
 }
 // 当前登录用户倒计时
 .login-user-count-time {
@@ -1158,6 +1065,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  color: white;
   img {
     height: (80rem / @baseFont);
   }
