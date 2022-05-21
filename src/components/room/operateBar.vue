@@ -1,16 +1,49 @@
 <template>
   <div class="operate-box">
     <div class="coin-box">
-      <div class="money-coin" @click="follow(1)">
+      <div
+        class="money-coin"
+        @click="follow(1)"
+        :class="{
+          unClickable: roomInfo.bottomCoin > 1 || loginUser.cardStatus,
+        }"
+      >
         <img src="@/assets/images/coin_1.jpg" alt="" />
       </div>
-      <div class="money-coin" @click="follow(2)">
+
+      <div
+        class="money-coin"
+        @click="follow(2)"
+        :class="{
+          unClickable:
+            roomInfo.bottomCoin > 2 ||
+            (loginUser.cardStatus && roomInfo.bottomCoin > 1),
+        }"
+      >
         <img src="@/assets/images/coin_2.jpg" alt="" />
       </div>
-      <div class="money-coin" @click="follow(5)">
+
+      <div
+        class="money-coin"
+        @click="follow(5)"
+        :class="{
+          unClickable:
+            roomInfo.bottomCoin > 5 ||
+            (loginUser.cardStatus && roomInfo.bottomCoin > 2.5),
+        }"
+      >
         <img src="@/assets/images/coin_5.jpg" alt="" />
       </div>
-      <div class="money-coin" @click="follow(10)">
+
+      <div
+        class="money-coin"
+        @click="follow(10)"
+        :class="{
+          unClickable:
+            roomInfo.bottomCoin > 10 ||
+            (loginUser.cardStatus && roomInfo.bottomCoin > 5),
+        }"
+      >
         <img src="@/assets/images/coin_10.jpg" alt="" />
       </div>
       <div class="money-coin" @click="follow(20)">
@@ -30,7 +63,7 @@ export default {
   data() {
     return {};
   },
-  props: ["roomInfo"],
+  props: ["roomInfo", "loginUser"],
   methods: {
     init() {},
     //跟注
@@ -75,13 +108,37 @@ export default {
   align-items: center;
   .coin-box {
     height: (60rem / @baseFont);
+
     display: flex;
-    justify-items: center;
+    justify-content: center;
     align-items: center;
-    img {
+    .money-coin {
       width: (50rem / @baseFont);
       height: (50rem / @baseFont);
+      position: relative;
       margin-left: (30rem / @baseFont);
+
+      img {
+        width: (50rem / @baseFont);
+        height: (50rem / @baseFont);
+      }
+
+      .unclick {
+        // position: absolute;
+        // top: 0;
+        // left: 0;
+        // width: (60rem / @baseFont);
+        // height: (60rem / @baseFont);
+        // background-color: red;
+        // background-image: url("../../assets/unClickable.png");
+        // background-repeat: no-repeat;
+        // background-size: 100% 100%;
+      }
+    }
+
+    .unClickable {
+      pointer-events: none; // 禁止鼠标点击事件
+      filter: grayscale(100%);
     }
   }
   .operate-button-box {

@@ -125,6 +125,7 @@
     <operate-bar
       class="operate-bar"
       :roomInfo="roomInfo"
+      :loginUser="loginUser"
       v-show="
         loginUser.username == roomInfo.activeUser.username &&
         roomInfo.status == 1
@@ -880,14 +881,18 @@ export default {
         })[0].showCardsIdList = data.contrasteder.showCardsIdList;
       }
 
-      //仍有玩家存活只需更新败者的存活状态和房间信息
+      //仍有玩家存活只需更新败者的存活状态 金钱 和房间信息
       this.roomInfo = data.room.roomInfo;
       if (data.loser.username == this.loginUser.username) {
         this.loginUser.liveStatus = 0;
+        this.loginUser.liveStatus = data.loser.coin;
       } else {
         this.flowerUserList.filter((user) => {
           return user.username == data.loser.username;
         })[0].liveStatus = 0;
+        this.flowerUserList.filter((user) => {
+          return user.username == data.loser.username;
+        })[0].coin = data.loser.coin;
       }
 
       this.showMessage(data.winner.username + "赢了");
