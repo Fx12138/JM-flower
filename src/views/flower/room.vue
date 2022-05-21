@@ -39,7 +39,7 @@
       :roomInfo="roomInfo"
     >
       <div slot="coin-follow" class="user0-follow coin-follow"></div>
-      <!-- 倒计时 -->
+      <!-- 计时器 -->
       <div
         class="active"
         slot="countTime"
@@ -59,7 +59,7 @@
       :roomInfo="roomInfo"
     >
       <div slot="coin-follow" class="user1-follow coin-follow"></div>
-      <!-- 倒计时 -->
+      <!-- 计时器 -->
       <div
         class="active"
         slot="countTime"
@@ -79,7 +79,7 @@
       :roomInfo="roomInfo"
     >
       <div slot="coin-follow" class="user2-follow coin-follow"></div>
-      <!-- 倒计时 -->
+      <!-- 计时器 -->
       <div
         class="active"
         slot="countTime"
@@ -99,7 +99,7 @@
       :roomInfo="roomInfo"
     >
       <div slot="coin-follow" class="user3-follow coin-follow"></div>
-      <!-- 倒计时 -->
+      <!-- 计时器 -->
       <div
         class="active"
         slot="countTime"
@@ -123,37 +123,6 @@
       "
     ></operate-bar>
 
-    <!-- <div
-      class="operate-box"
-      v-if="
-        loginUser.username == roomInfo.activeUser.username &&
-        roomInfo.status == 1
-      "
-    >
-      <div class="coin-box">
-        <div class="money-coin" @click="follow(1)">
-          <img src="@/assets/images/coin_1.jpg" alt="" />
-        </div>
-        <div class="money-coin" @click="follow(2)">
-          <img src="@/assets/images/coin_2.jpg" alt="" />
-        </div>
-        <div class="money-coin" @click="follow(5)">
-          <img src="@/assets/images/coin_5.jpg" alt="" />
-        </div>
-        <div class="money-coin" @click="follow(10)">
-          <img src="@/assets/images/coin_10.jpg" alt="" />
-        </div>
-        <div class="money-coin" @click="follow(20)">
-          <img src="@/assets/images/coin_20.jpg" alt="" />
-        </div>
-      </div>
-      <div class="operate-button-box">
-        <button @click="follow()">跟注</button>
-        <button @click="seeCard">看牌</button>
-        <button @click="chooseOne">比牌</button>
-        <button @click="loseCard">弃牌</button>
-      </div>
-    </div> -->
     <div class="fast-message-button" @click="showFastList = !showFastList">
       发消息
     </div>
@@ -1056,12 +1025,13 @@ body {
   position: fixed;
   bottom: 0;
 }
-// 当前登录用户倒计时
+// 当前登录用户计时器
 .login-user-count-time {
   position: fixed;
   height: (80rem / @baseFont);
   line-height: (50rem / @baseFont);
   font-size: (40rem / @baseFont);
+  z-index: 999;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
