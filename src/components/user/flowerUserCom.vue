@@ -137,6 +137,7 @@ export default {
       this.$socket.emit("seeCard", {
         roomId: this.roomInfo.roomId,
         activeUserId: this.roomInfo.activeUser.id,
+        isContrast: true,
       });
       setTimeout(() => {
         this.$socket.emit("contrastResult", {

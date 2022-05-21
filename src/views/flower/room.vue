@@ -792,16 +792,19 @@ export default {
     },
 
     //看牌
-    seeCard(room) {
-      //播放音效
-      this.sendAudio.src = this.optionAudioList.kanpai;
-      this.sendAudio.load();
-      this.sendAudio.play();
+    seeCard(data) {
+      //不是比牌操作才播放看牌音效
+      if (!data.isContrast) {
+        //播放音效
+        this.sendAudio.src = this.optionAudioList.kanpai;
+        this.sendAudio.load();
+        this.sendAudio.play();
+      }
 
       //更新房间信息
       // this.roomInfo = room.roomInfo;
       //更新玩家信息
-      let curUser = room.flowerUserList.filter((user) => {
+      let curUser = data.room.flowerUserList.filter((user) => {
         return user.username == this.loginUser.username;
       })[0];
       this.loginUser.id = curUser.id;
@@ -809,10 +812,10 @@ export default {
       this.loginUser.isDown = curUser.isDown;
       this.loginUser.cardStatus = curUser.cardStatus;
       this.loginUser.liveStatus = curUser.liveStatus;
-      let userNumber = room.flowerUserList.length;
+      let userNumber = data.room.flowerUserList.length;
       //获取所有用户信息
-      for (let i = 0; i < room.flowerUserList.length - 1; i++) {
-        let user = room.flowerUserList.filter((user) => {
+      for (let i = 0; i < data.room.flowerUserList.length - 1; i++) {
+        let user = data.room.flowerUserList.filter((user) => {
           return user.id == (this.loginUser.id + i + 1) % userNumber;
         })[0];
         if (user) {
