@@ -23,7 +23,11 @@
     <!-- 当前用户计时器 -->
     <div
       class="login-user-count-time"
-      v-show="roomInfo.activeUser.id == loginUser.id && roomInfo.status != 3"
+      v-show="
+        roomInfo.activeUser.id == loginUser.id &&
+        roomInfo.status != 3 &&
+        roomInfo.status != 4
+      "
     >
       <img src="../../assets/clock.png" alt="" />{{ countTime }}
     </div>
@@ -46,7 +50,8 @@
         v-show="
           roomInfo.activeUser.id == flowerUserList[0].id &&
           flowerUserList[0].username != loginUser.username &&
-          roomInfo.status != 3
+          roomInfo.status != 3 &&
+          roomInfo.status != 4
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -66,7 +71,8 @@
         v-show="
           roomInfo.activeUser.id == flowerUserList[1].id &&
           flowerUserList[1].username != loginUser.username &&
-          roomInfo.status != 3
+          roomInfo.status != 3 &&
+          roomInfo.status != 4
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -86,7 +92,8 @@
         v-show="
           roomInfo.activeUser.id == flowerUserList[2].id &&
           flowerUserList[2].username != loginUser.username &&
-          roomInfo.status != 3
+          roomInfo.status != 3 &&
+          roomInfo.status != 4
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -106,7 +113,8 @@
         v-show="
           roomInfo.activeUser.id == flowerUserList[3].id &&
           flowerUserList[3].username != loginUser.username &&
-          roomInfo.status != 3
+          roomInfo.status != 3 &&
+          roomInfo.status != 4
         "
       >
         <img src="../../assets/clock.png" alt="" />{{ countTime }}
@@ -148,28 +156,26 @@
     </div>
 
     <!-- 右下角快捷语音提示框 -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-      <div
-        id="liveToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div class="toast-header">
-          <img :src="talkItem.avatar" class="rounded me-2" alt="..." />
-          <strong class="me-auto">{{ talkItem.username }}</strong>
-          <small>1 second ago</small>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body">
-          {{ talkItem.messageContent }}
-        </div>
+    <div
+      id="liveToast"
+      class="toast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="toast-header">
+        <img :src="talkItem.avatar" class="rounded me-2" alt="..." />
+        <strong class="me-auto">{{ talkItem.username }}</strong>
+        <small>1 second ago</small>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="toast-body">
+        {{ talkItem.messageContent }}
       </div>
     </div>
   </div>
@@ -183,7 +189,6 @@ import roomInfo from "components/room/roomInfo.vue";
 import fastMessageList from "../../components/room/fastMessageList.vue";
 import flowerUserCom from "components/user/flowerUserCom.vue";
 import operateBar from "components/room/operateBar.vue";
-import loginVue from "../login/login.vue";
 export default {
   components: { fastMessageList, roomInfo, flowerUserCom, operateBar },
   data() {
@@ -220,6 +225,7 @@ export default {
           },
         ],
         cardType: null,
+        showCardsIdList: [],
         coin: 0,
         isDown: 0,
         cardStatus: 0, //是否看牌 0未看,1看了
@@ -274,6 +280,7 @@ export default {
             },
           ],
           cardType: null,
+          showCardsIdList: [],
           coin: 0,
           isDown: 0,
           cardStatus: 0, //是否看牌 0未看,1看了
@@ -311,6 +318,7 @@ export default {
             },
           ],
           cardType: null,
+          showCardsIdList: [],
           coin: 0,
           isDown: 0,
           cardStatus: 0, //是否看牌 0未看,1看了
@@ -348,6 +356,7 @@ export default {
             },
           ],
           cardType: null,
+          showCardsIdList: [],
           coin: 0,
           isDown: 0,
           cardStatus: 0, //是否看牌 0未看,1看了
@@ -385,6 +394,7 @@ export default {
             },
           ],
           cardType: null,
+          showCardsIdList: [],
           coin: 0,
           isDown: 0,
           cardStatus: 0, //是否看牌 0未看,1看了
@@ -434,6 +444,17 @@ export default {
         this.interval = setInterval(() => {
           this.countTime--;
         }, 1000);
+      },
+    },
+    "roomInfo.status": {
+      handler(newValue, oldValue) {
+        console.log("房间状态改变" + newValue);
+
+        if (newValue == 3 || newValue == 4) {
+          clearInterval(this.interval);
+          this.interval = null;
+          this.countTime = 30;
+        }
       },
     },
     countTime: {
@@ -777,7 +798,7 @@ export default {
       this.sendAudio.play();
 
       //更新房间信息
-      this.roomInfo = room.roomInfo;
+      // this.roomInfo = room.roomInfo;
       //更新玩家信息
       let curUser = room.flowerUserList.filter((user) => {
         return user.username == this.loginUser.username;
@@ -803,13 +824,9 @@ export default {
     },
 
     showCards(data) {
-      this.roomInfo = data.room.roomInfo;
+      // this.roomInfo = data.room.roomInfo;
       this.loginUser.cardStatus = data.activeUser.cardStatus;
       for (let j = 0; j < data.activeUser.card.length; j++) {
-        console.log(j);
-
-        console.log(this.loginUser.card[j]);
-
         this.loginUser.card[j].path = require("../../assets/images" +
           data.activeUser.card[j].path.replace("../../assets/images", ""));
       }
@@ -836,18 +853,43 @@ export default {
 
     //等待比牌状态
     chooseStatus() {
+      this.roomInfo.status = 2;
+      // this.sendAudio.src = this.optionAudioList.bipai;
+      // this.sendAudio.load();
+      // this.sendAudio.play();
+    },
+
+    //取消计时器 等待比较状态
+    cancelCountTime() {
       this.sendAudio.src = this.optionAudioList.bipai;
       this.sendAudio.load();
       this.sendAudio.play();
+      clearInterval(this.interval);
+      this.countTime = 30;
+      this.roomInfo.status = 3;
     },
 
     //比牌结果
     contrastResult(data) {
+      //被比牌用户的可看牌用户中加入发起比牌用户的用户名
+      if (data.contrasteder.username == this.loginUser.username) {
+        this.loginUser.showCardsIdList = data.contrasteder.showCardsIdList;
+      } else {
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrasteder.username;
+        })[0].showCardsIdList = data.contrasteder.showCardsIdList;
+      }
+
       //仍有玩家存活只需更新败者的存活状态和房间信息
       this.roomInfo = data.room.roomInfo;
-      this.flowerUserList.filter((user) => {
-        return user.username == data.loser.username;
-      })[0].liveStatus = 0;
+      if (data.loser.username == this.loginUser.username) {
+        this.loginUser.liveStatus = 0;
+      } else {
+        this.flowerUserList.filter((user) => {
+          return user.username == data.loser.username;
+        })[0].liveStatus = 0;
+      }
+
       this.showMessage(data.winner.username + "赢了");
     },
 
@@ -897,6 +939,13 @@ export default {
 
     //非首局发牌
     sendNewCards(room) {
+      for (let i = 0; i < this.flowerUserList.length; i++) {
+        this.flowerUserList[i].showCardsIdList.splice(
+          0,
+          this.flowerUserList[i].showCardsIdList.length
+        );
+      }
+
       //删除上局扔的筹码图片
       let followUserImg = document.getElementsByClassName("coin-follow");
       for (let i = 0; i < this.flowerUserList.length; i++) {
@@ -1065,11 +1114,13 @@ body {
 }
 #liveToast {
   position: fixed;
-  bottom: (65rem / @baseFont);
-  right: (10rem / @baseFont);
+  top: 0;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 999;
+  opacity: 0.9;
   img {
     width: (40rem / @baseFont);
-    // height: 100%;
   }
 }
 </style>

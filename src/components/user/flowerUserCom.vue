@@ -34,10 +34,14 @@
       </div>
 
       <!-- 用户的牌 -->
-      <div class="user-card-box">
+      <div class="user-card-box" :class="{ lose: !lose }">
         <!-- 登录用户看牌 显示牌 -->
         <div
-          v-if="userInfo.cardStatus && loginUser.username === userInfo.username"
+          v-if="
+            (userInfo.cardStatus && loginUser.username === userInfo.username) ||
+            (userInfo.showCardsIdList.indexOf(loginUser.username) != -1 &&
+              loginUser.username != userInfo.username)
+          "
           class="user-card"
         >
           <div v-for="(card, index) in userInfo.card" :key="index">
@@ -109,7 +113,7 @@ export default {
       },
     };
   },
-  props: ["userInfo", "roomInfo"],
+  props: ["userInfo", "roomInfo", "showCardsIdList"],
   computed: {
     lose: function () {
       return this.userInfo.liveStatus;
@@ -117,7 +121,8 @@ export default {
     isActived: function () {
       return (
         this.roomInfo.activeUser.id == this.userInfo.id &&
-        this.roomInfo.status != 3
+        this.roomInfo.status != 3 &&
+        this.roomInfo.status != 4
       );
     },
   },
@@ -125,11 +130,21 @@ export default {
     init() {},
 
     contrast(contrastinger, contrasteder) {
-      this.$socket.emit("contrastResult", {
+      document.getElementsByClassName("outer")[0].style.background = "red";
+      //将所有的组件的房间信息置为等待比牌的3
+      this.$socket.emit("waitContrastResult", { roomId: this.roomInfo.roomId });
+      //先让玩家看到自己的牌
+      this.$socket.emit("seeCard", {
         roomId: this.roomInfo.roomId,
-        contrastinger,
-        contrasteder,
+        activeUserId: this.roomInfo.activeUser.id,
       });
+      setTimeout(() => {
+        this.$socket.emit("contrastResult", {
+          roomId: this.roomInfo.roomId,
+          contrastinger,
+          contrasteder,
+        });
+      }, 5000);
     },
   },
   components: {},
