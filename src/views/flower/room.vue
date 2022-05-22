@@ -553,12 +553,6 @@ export default {
             this.flowerUserList[i].cardStatus = user.cardStatus;
             this.flowerUserList[i].liveStatus = user.liveStatus;
             this.flowerUserList[i].showCardsIdList = user.showCardsIdList;
-            console.log(
-              user.showCardsIdList.findIndex((item) => {
-                return item == this.loginUser.username;
-              })
-            );
-
             if (
               user.showCardsIdList.findIndex((item) => {
                 return item == this.loginUser.username;

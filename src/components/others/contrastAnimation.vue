@@ -35,13 +35,7 @@ export default {
     },
     contrastinger: {
       handler(newValue, oldValue) {
-        // if (newValue.isLoser === true) {
-        //   console.log("contrastinger输了,应该变成loser效果");
-        // } else if (newValue.isLoser === false) {
-        //   console.log("contrastinger赢了,应该变成winner效果");
-        // }
         if (newValue.isLoser === true) {
-          console.log(newValue.isLoser + "contrastinger isLoser改变");
           document.getElementById("contrastinger-box").classList.add("loser");
         } else if (newValue.isLoser === false) {
           document.getElementById("contrastinger-box").classList.add("winner");
@@ -52,14 +46,7 @@ export default {
     },
     contrasteder: {
       handler(newValue, oldValue) {
-        // if (newValue.isLoser === true) {
-        //   console.log("contrasteder,应该变成loser效果");
-        // } else if (newValue.isLoser === false) {
-        //   console.log("contrasteder,应该变成winner效果");
-        // }
-
         if (newValue.isLoser === true) {
-          console.log(newValue.isLoser + "contrasteder isLoser改变");
           document.getElementById("contrasteder-box").classList.add("loser");
         } else if (newValue.isLoser === false) {
           document.getElementById("contrasteder-box").classList.add("winner");

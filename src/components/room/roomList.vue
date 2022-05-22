@@ -263,7 +263,6 @@ export default {
 
     //进入房间
     inRoom: function (room) {
-      console.log(room.password);
       this.clickRoomId = room.roomId;
 
       getRoomById(this.clickRoomId).then((res) => {

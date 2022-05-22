@@ -69,7 +69,6 @@ export default {
   sockets: {
     sendFastMessage(data) {
       //data是user messageId
-      console.log(data);
 
       this.myAudio.src = this.messageList[data.data.messageId].audioSrc;
       this.myAudio.load();

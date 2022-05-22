@@ -8,6 +8,14 @@ export function loginByUsername(userFrom) {
     })
 }
 
+export function register(userFrom) {
+    return localReq({
+        url: '/user/register',
+        method: 'post',
+        data: userFrom
+    })
+}
+
 export function getUserById(userId) {
     return localReq({
         url: '/user',

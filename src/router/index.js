@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import { getCookie } from '../utils/cookieUtil'
 
 const Home = () => import('@/views/index/index')
-const Login = () => import('@/views/login/login')
+const Login = () => import('@/views/login/loginPage')
 const FlowerRoom = () => import('@/views/flower/room')
 
 Vue.use(Router)
