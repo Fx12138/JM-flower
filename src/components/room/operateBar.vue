@@ -81,6 +81,10 @@ export default {
     },
     //选择一个进行比牌
     chooseOne() {
+      if (this.roomInfo.aliveNumber <= 1) {
+        alert("没有可比牌的用户");
+        return;
+      }
       this.roomInfo.status = 2;
       //这里应该把this.roomInfo.status emit到父组件,让父组件更改房间状态,从而控制比牌的显隐
       this.$socket.emit("chooseStatus", { roomId: this.roomInfo.roomId });

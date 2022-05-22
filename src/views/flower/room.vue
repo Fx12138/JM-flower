@@ -526,6 +526,19 @@ export default {
       getRoomById(this.roomId).then((res) => {
         this.roomInfo = res.data.data.roomInfo;
         let userNumber = res.data.data.flowerUserList.length;
+
+        //获取登录用户信息
+        let curUser = res.data.data.flowerUserList.filter((user) => {
+          return user.username == JSON.parse(getCookie("userInfo")).username;
+        })[0];
+        this.loginUser.id = curUser.id;
+        this.loginUser.username = curUser.username;
+        this.loginUser.coin = curUser.coin;
+        this.loginUser.isDown = curUser.isDown;
+        this.loginUser.cardStatus = curUser.cardStatus;
+        this.loginUser.liveStatus = curUser.liveStatus;
+        this.loginUser.showCardsIdList = curUser.showCardsIdList;
+
         //获取所有用户信息
         for (let i = 0; i < res.data.data.flowerUserList.length - 1; i++) {
           let user = res.data.data.flowerUserList.filter((user) => {
@@ -539,32 +552,28 @@ export default {
             this.flowerUserList[i].isDown = user.isDown;
             this.flowerUserList[i].cardStatus = user.cardStatus;
             this.flowerUserList[i].liveStatus = user.liveStatus;
+            this.flowerUserList[i].showCardsIdList = user.showCardsIdList;
+            console.log(
+              user.showCardsIdList.findIndex((item) => {
+                return item == this.loginUser.username;
+              })
+            );
+
+            if (
+              user.showCardsIdList.findIndex((item) => {
+                return item == this.loginUser.username;
+              }) != -1
+            ) {
+              this.flowerUserList[i].card = user.card;
+            }
           }
         }
-        //获取登录用户信息
-        let curUser = res.data.data.flowerUserList.filter((user) => {
-          return user.username == JSON.parse(getCookie("userInfo")).username;
-        })[0];
-        this.loginUser.id = curUser.id;
-        this.loginUser.username = curUser.username;
-        this.loginUser.coin = curUser.coin;
-        this.loginUser.isDown = curUser.isDown;
-        this.loginUser.cardStatus = curUser.cardStatus;
-        this.loginUser.liveStatus = curUser.liveStatus;
 
         //如果登录用户看牌了 则加载牌的图片
         if (curUser.cardStatus) {
-          for (let j = 0; j < curUser.card.length; j++) {
-            this.loginUser.card[j].color = curUser.card[j].color;
-            this.loginUser.card[j].number = curUser.card[j].number;
-            this.loginUser.card[j].name = curUser.card[j].name;
-            this.loginUser.card[j].order = curUser.card[j].order;
-            this.loginUser.card[j].color = curUser.card[j].color;
-            this.loginUser.card[j].power = curUser.card[j].power;
-            this.loginUser.card[j].path = require("../../assets/images" +
-              curUser.card[j].path.replace("../../assets/images", ""));
-          }
+          this.loginUser.card = curUser.card;
         }
+
         let sendData = {
           userInfo: this.loginUser,
           roomId: this.roomId,
@@ -857,11 +866,17 @@ export default {
     },
 
     showCards(data) {
-      // this.roomInfo = data.room.roomInfo;
-      this.loginUser.cardStatus = data.activeUser.cardStatus;
-      for (let j = 0; j < data.activeUser.card.length; j++) {
-        this.loginUser.card[j].path = require("../../assets/images" +
-          data.activeUser.card[j].path.replace("../../assets/images", ""));
+      if (data.activeUser) {
+        //自己看牌
+        this.loginUser.cardStatus = data.activeUser.cardStatus;
+        this.loginUser.card = data.activeUser.card;
+      }
+
+      if (data.contrasteder) {
+        //比牌
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrasteder.username;
+        })[0].card = data.contrasteder.card;
       }
     },
 

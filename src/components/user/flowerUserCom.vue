@@ -45,9 +45,7 @@
           "
           class="user-card"
         >
-          <div v-for="(card, index) in userInfo.card" :key="index">
-            <img class="card" :src="card.path" alt="" />
-          </div>
+          <user-card :cardList="userInfo.card"></user-card>
         </div>
 
         <!-- 非登录用户显示 -->
@@ -68,8 +66,8 @@
   </div>
 </template>
 <script>
-import { getRoomById } from "../../network/room";
 import { getCookie } from "../../utils/cookieUtil";
+import UserCard from "./userCard.vue";
 export default {
   data() {
     return {
@@ -152,7 +150,7 @@ export default {
       }, 3000);
     },
   },
-  components: {},
+  components: { UserCard },
   created() {
     this.loginUser = JSON.parse(getCookie("userInfo"));
   },
