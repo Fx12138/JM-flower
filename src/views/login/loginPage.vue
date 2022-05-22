@@ -55,7 +55,10 @@
             </div>
           </div>
 
-          <div class="register-button" @click="register(registerForm)">
+          <div
+            class="register-button"
+            @click="registerByUsername(registerForm)"
+          >
             <img src="../../assets/loginButton.png" alt="" />
           </div>
         </div>
@@ -103,13 +106,15 @@ export default {
         }
       });
     },
-    register(registerForm) {
+    registerByUsername(registerForm) {
       if (!registerForm.username || !registerForm.password) {
         alert("用户名或密码不能为空");
       }
       register(registerForm).then((res) => {
         if (res.data.code == 200) {
           alert("注册成功,请登录!");
+          document.getElementById("main-box").style.transform =
+            "perspective(900px) rotateY(0deg)";
           // setCookie("token", "zzyn", 3000);
           // setCookie("userInfo", JSON.stringify(res.data.data), 3000);
           // //用户信息存入vuex

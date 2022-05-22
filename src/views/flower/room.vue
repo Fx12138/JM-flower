@@ -952,12 +952,30 @@ export default {
 
     //比牌结果
     contrastResult(data) {
+      //传入比牌动效组件比牌结果
       if (this.contrastinger.username == data.loser.username) {
+        //发起比牌的用户输了
         this.contrastinger.isLoser = true;
         this.contrasteder.isLoser = false;
       } else {
+        //被比牌的用户输了
         this.contrasteder.isLoser = true;
         this.contrastinger.isLoser = false;
+        if (this.contrasteder.username == this.loginUser.username) {
+          this.loginUser.card = data.loser.card;
+        }
+      }
+      //改变输的用户的存活状态
+      if (
+        this.flowerUserList.filter((user) => {
+          return user.username == data.loser.username;
+        })[0]
+      ) {
+        this.flowerUserList.filter((user) => {
+          return user.username == data.loser.username;
+        })[0].liveStatus = 0;
+      } else {
+        this.loginUser.liveStatus = 0;
       }
 
       //被比牌用户的可看牌用户中加入发起比牌用户的用户名

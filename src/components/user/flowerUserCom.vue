@@ -41,7 +41,8 @@
           v-if="
             (userInfo.cardStatus && loginUser.username === userInfo.username) ||
             (userInfo.showCardsIdList.indexOf(loginUser.username) != -1 &&
-              loginUser.username != userInfo.username)
+              loginUser.username != userInfo.username) ||
+            (loginUser.username === userInfo.username && !userInfo.liveStatus)
           "
           class="user-card"
         >
