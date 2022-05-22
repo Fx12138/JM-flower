@@ -14,8 +14,11 @@
     </div>
 
     <div class="room-items-box">
-      <div class="room-items">
-        <div class="rooms-box"></div>
+      <div v-if="noRoom" class="no-room">
+        <div>当前没有房间哦!</div>
+        <div>快去创建新的房间一起玩吧!</div>
+      </div>
+      <div v-else class="room-items">
         <room-item
           class="room-item"
           v-for="room in rooms"
@@ -181,9 +184,21 @@ export default {
       inRoomPassword: null,
       roomModal: null,
       passwordModal: null,
+      noRoom: false,
     };
   },
   props: ["rooms"],
+  watch: {
+    rooms: {
+      handler(newValue, oldValue) {
+        if (newValue.length > 1) {
+          this.noRoom = false;
+        } else {
+          this.noRoom = true;
+        }
+      },
+    },
+  },
   methods: {
     init() {
       this.userInfo = JSON.parse(getCookie("userInfo"));
@@ -363,7 +378,7 @@ export default {
   .search-box {
     box-sizing: border-box;
     width: 100%;
-    flex: 1;
+    flex: 1.5;
     padding-top: (3rem / @baseFont);
     overflow: hidden;
     padding-right: 7%;
@@ -396,8 +411,19 @@ export default {
       font-weight: 1000;
     }
   }
+  .no-room {
+    width: 100%;
+    font-size: (50rem / @baseFont);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    div {
+      width: 100%;
+      text-align: center;
+    }
+  }
   .room-items-box {
-    flex: 7;
+    flex: 6.5;
     // padding: (3rem / @baseFont) (10rem / @baseFont);
     width: 90%;
     overflow: auto;
