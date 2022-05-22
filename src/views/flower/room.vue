@@ -5,6 +5,7 @@
       <source src="@/assets/audios/shufflePoker.mp3" type="audio/ogg" />
       您的浏览器不支持 audio 元素。
     </audio>
+    <!-- <button @click="showAnimation" id="show123">显示比牌</button> -->
 
     <div class="sendcard">
       <button
@@ -179,6 +180,14 @@
         {{ talkItem.messageContent }}
       </div>
     </div>
+
+    <!-- 比牌效果 -->
+    <contrast-animation
+      id="contrast-animation"
+      :contrastinger="contrastinger"
+      :contrasteder="contrasteder"
+      :roomInfo="roomInfo"
+    ></contrast-animation>
   </div>
 </template>
 
@@ -190,14 +199,21 @@ import roomInfo from "components/room/roomInfo.vue";
 import fastMessageList from "../../components/room/fastMessageList.vue";
 import flowerUserCom from "components/user/flowerUserCom.vue";
 import operateBar from "components/room/operateBar.vue";
+import contrastAnimation from "components/others/contrastAnimation.vue";
 export default {
-  components: { fastMessageList, roomInfo, flowerUserCom, operateBar },
+  components: {
+    fastMessageList,
+    roomInfo,
+    flowerUserCom,
+    operateBar,
+    contrastAnimation,
+  },
   data() {
     return {
       loginUser: {
         id: 10,
         avatar:
-          "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+          "https://img1.baidu.com/it/u=332821686,3073272655&fm=253&fmt=auto&app=138&f=JPEG?w=313&h=306",
         username: "等待玩家",
         card: [
           {
@@ -252,7 +268,7 @@ export default {
         {
           id: 10,
           avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pptjia.com%2F20170816%2F1b85275e34aa3371395f15719292e3c2_thumb.JPG&refer=http%3A%2F%2Fimg.pptjia.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737173&t=1b9adfc6d3a730ee3ef218bb99f98dd1",
           username: "等待玩家",
           card: [
             {
@@ -290,7 +306,7 @@ export default {
         {
           id: 10,
           avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pptjia.com%2F20170816%2F1b85275e34aa3371395f15719292e3c2_thumb.JPG&refer=http%3A%2F%2Fimg.pptjia.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737173&t=1b9adfc6d3a730ee3ef218bb99f98dd1",
           username: "等待玩家",
           card: [
             {
@@ -328,7 +344,7 @@ export default {
         {
           id: 10,
           avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pptjia.com%2F20170816%2F1b85275e34aa3371395f15719292e3c2_thumb.JPG&refer=http%3A%2F%2Fimg.pptjia.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737173&t=1b9adfc6d3a730ee3ef218bb99f98dd1",
           username: "等待玩家",
           card: [
             {
@@ -366,7 +382,7 @@ export default {
         {
           id: 10,
           avatar:
-            "https://img1.baidu.com/it/u=3583591450,2292153595&fm=26&fmt=auto&gp=0.jpg",
+            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pptjia.com%2F20170816%2F1b85275e34aa3371395f15719292e3c2_thumb.JPG&refer=http%3A%2F%2Fimg.pptjia.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737173&t=1b9adfc6d3a730ee3ef218bb99f98dd1",
           username: "等待玩家",
           card: [
             {
@@ -426,6 +442,22 @@ export default {
       coin20: null,
       countTime: 30,
       interval: null,
+      contrastinger: {
+        //发起比牌的用户
+        username: "",
+        isLoser: null,
+      },
+      contrasteder: {
+        //被比牌的用户
+        username: "",
+        isLoser: null,
+      },
+      userAvatarList: [
+        "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fupload.dokee.cn%2Fcs16%2FUserAvatars%2F92%2F4633%2F926763.jpg&refer=http%3A%2F%2Fupload.dokee.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737679&t=eb1f042a290d6c193861876d05a90c0f",
+        "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.duoziwang.com%2F2019%2F02%2F04091610283198.jpg&refer=http%3A%2F%2Fimg.duoziwang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1655737696&t=a4cc2860a907b837c8ed64eddcafa3f5",
+        "https://img1.baidu.com/it/u=2736298424,3170548933&fm=253&fmt=auto&app=138&f=PNG?w=449&h=293",
+        "https://img2.baidu.com/it/u=4156581219,1764059600&fm=253&fmt=auto&app=138&f=JPEG?w=488&h=311",
+      ],
     };
   },
   watch: {
@@ -449,8 +481,6 @@ export default {
     },
     "roomInfo.status": {
       handler(newValue, oldValue) {
-        console.log("房间状态改变" + newValue);
-
         if (newValue == 3 || newValue == 4) {
           clearInterval(this.interval);
           this.interval = null;
@@ -503,7 +533,7 @@ export default {
           })[0];
           if (user) {
             this.flowerUserList[i].id = user.id;
-            this.flowerUserList[i].avatar = user.avatar;
+            this.flowerUserList[i].avatar = this.userAvatarList[i];
             this.flowerUserList[i].username = user.username;
             this.flowerUserList[i].coin = user.coin;
             this.flowerUserList[i].isDown = user.isDown;
@@ -516,7 +546,6 @@ export default {
           return user.username == JSON.parse(getCookie("userInfo")).username;
         })[0];
         this.loginUser.id = curUser.id;
-        this.loginUser.avatar = curUser.avatar;
         this.loginUser.username = curUser.username;
         this.loginUser.coin = curUser.coin;
         this.loginUser.isDown = curUser.isDown;
@@ -643,7 +672,7 @@ export default {
           })[0];
           if (user) {
             this.flowerUserList[i].id = user.id;
-            this.flowerUserList[i].avatar = user.avatar;
+            this.flowerUserList[i].avatar = this.userAvatarList[i];
             this.flowerUserList[i].username = user.username;
             this.flowerUserList[i].coin = user.coin;
             this.flowerUserList[i].isDown = user.isDown;
@@ -864,10 +893,49 @@ export default {
     },
 
     //取消计时器 等待比较状态
-    cancelCountTime() {
+    cancelCountTime(data) {
       this.sendAudio.src = this.optionAudioList.bipai;
       this.sendAudio.load();
       this.sendAudio.play();
+      // 显示比牌特效
+      let a = document.getElementById("contrast-animation");
+      a.style.transition = "1.5s";
+      a.style.left = "78%";
+      setTimeout(() => {
+        a.style.left = "170%";
+      }, 5000);
+      // this.contrastinger.isLoser = null;
+      // this.contrasteder.isLoser = null;
+
+      if (
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrastinger.username;
+        })[0]
+      ) {
+        let contrastinger = this.flowerUserList.filter((user) => {
+          return user.username == data.contrastinger.username;
+        })[0];
+        this.contrastinger.username = contrastinger.username;
+        this.contrastinger.avatar = contrastinger.avatar;
+      } else {
+        this.contrastinger.username = this.loginUser.username;
+        this.contrastinger.avatar = this.loginUser.avatar;
+      }
+      if (
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrasteder.username;
+        })[0]
+      ) {
+        let contrasteder = this.flowerUserList.filter((user) => {
+          return user.username == data.contrasteder.username;
+        })[0];
+        this.contrasteder.username = contrasteder.username;
+        this.contrasteder.avatar = contrasteder.avatar;
+      } else {
+        this.contrasteder.username = this.loginUser.username;
+        this.contrasteder.avatar = this.loginUser.avatar;
+      }
+
       clearInterval(this.interval);
       this.countTime = 30;
       this.roomInfo.status = 3;
@@ -875,6 +943,14 @@ export default {
 
     //比牌结果
     contrastResult(data) {
+      if (this.contrastinger.username == data.loser.username) {
+        this.contrastinger.isLoser = true;
+        this.contrasteder.isLoser = false;
+      } else {
+        this.contrasteder.isLoser = true;
+        this.contrastinger.isLoser = false;
+      }
+
       //被比牌用户的可看牌用户中加入发起比牌用户的用户名
       if (data.contrasteder.username == this.loginUser.username) {
         this.loginUser.showCardsIdList = data.contrasteder.showCardsIdList;
@@ -884,21 +960,25 @@ export default {
         })[0].showCardsIdList = data.contrasteder.showCardsIdList;
       }
 
-      //仍有玩家存活只需更新败者的存活状态 金钱 和房间信息
-      this.roomInfo = data.room.roomInfo;
-      if (data.loser.username == this.loginUser.username) {
-        this.loginUser.liveStatus = 0;
-        this.loginUser.liveStatus = data.loser.coin;
-      } else {
-        this.flowerUserList.filter((user) => {
-          return user.username == data.loser.username;
-        })[0].liveStatus = 0;
-        this.flowerUserList.filter((user) => {
-          return user.username == data.loser.username;
-        })[0].coin = data.loser.coin;
-      }
+      setTimeout(() => {
+        //仍有玩家存活只需更新败者的存活状态 金钱 和房间信息
+        this.roomInfo = data.room.roomInfo;
+        if (data.loser.username == this.loginUser.username) {
+          this.loginUser.liveStatus = 0;
+          this.loginUser.coin = data.loser.coin;
+        } else {
+          this.flowerUserList.filter((user) => {
+            return user.username == data.loser.username;
+          })[0].liveStatus = 0;
+          this.flowerUserList.filter((user) => {
+            return user.username == data.loser.username;
+          })[0].coin = data.loser.coin;
+        }
+        this.contrasteder.isLoser = null;
+        this.contrastinger.isLoser = null;
 
-      this.showMessage(data.winner.username + "赢了");
+        // this.showMessage(data.winner.username + "赢了");
+      }, 5000);
     },
 
     //当前局结束
@@ -1130,5 +1210,22 @@ body {
   img {
     width: (40rem / @baseFont);
   }
+}
+
+#contrast-animation {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translate(-100%, -50%);
+  width: 60%;
+  height: 35%;
+  // background: rgba(34, 114, 93);
+  // opacity: 0.8;
+  z-index: 999;
+  transition: 2s;
+}
+#show123 {
+  position: fixed;
+  left: 10%;
 }
 </style>

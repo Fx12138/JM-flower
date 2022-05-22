@@ -15,7 +15,8 @@
             v-show="
               roomInfo.status == 2 &&
               userInfo.liveStatus &&
-              userInfo.username != roomInfo.activeUser.username
+              userInfo.username != roomInfo.activeUser.username &&
+              loginUser.username == roomInfo.activeUser.username
             "
             @click="contrast(roomInfo.activeUser, userInfo)"
           >
@@ -130,9 +131,12 @@ export default {
     init() {},
 
     contrast(contrastinger, contrasteder) {
-      document.getElementsByClassName("outer")[0].style.background = "red";
       //将所有的组件的房间信息置为等待比牌的3
-      this.$socket.emit("waitContrastResult", { roomId: this.roomInfo.roomId });
+      this.$socket.emit("waitContrastResult", {
+        roomId: this.roomInfo.roomId,
+        contrastinger,
+        contrasteder,
+      });
       //先让玩家看到自己的牌
       this.$socket.emit("seeCard", {
         roomId: this.roomInfo.roomId,
@@ -145,7 +149,7 @@ export default {
           contrastinger,
           contrasteder,
         });
-      }, 5000);
+      }, 3000);
     },
   },
   components: {},

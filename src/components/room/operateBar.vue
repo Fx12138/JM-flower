@@ -122,18 +122,6 @@ export default {
         width: (50rem / @baseFont);
         height: (50rem / @baseFont);
       }
-
-      .unclick {
-        // position: absolute;
-        // top: 0;
-        // left: 0;
-        // width: (60rem / @baseFont);
-        // height: (60rem / @baseFont);
-        // background-color: red;
-        // background-image: url("../../assets/unClickable.png");
-        // background-repeat: no-repeat;
-        // background-size: 100% 100%;
-      }
     }
 
     .unClickable {
