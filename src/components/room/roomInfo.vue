@@ -33,7 +33,7 @@ export default {
   flex-direction: column;
   align-content: flex-start;
   div {
-    font-size: (1rem / @baseFont);
+    font-size: (15rem / @baseFont);
   }
   :nth-child(1) {
     margin-bottom: (5rem / @baseFont);

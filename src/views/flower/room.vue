@@ -1125,6 +1125,7 @@ body {
   position: absolute;
   top: (10rem / @baseFont);
   left: (10rem / @baseFont);
+  min-height: (150rem / @baseFont);
   z-index: 99999;
 }
 
@@ -1234,8 +1235,6 @@ body {
   transform: translate(-100%, -50%);
   width: 60%;
   height: 35%;
-  // background: rgba(34, 114, 93);
-  // opacity: 0.8;
   z-index: 999;
   transition: 2s;
 }

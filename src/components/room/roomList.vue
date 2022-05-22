@@ -366,7 +366,6 @@ export default {
   .search-box {
     box-sizing: border-box;
     width: 100%;
-    // height: 10%;
     flex: 1;
     padding-top: (3rem / @baseFont);
     overflow: hidden;
@@ -375,17 +374,18 @@ export default {
     align-items: center;
     flex-wrap: nowrap;
     flex-direction: row-reverse;
-    margin-right: (20rem / @baseFont);
     input {
       height: 90%;
       width: 16%;
       max-height: (45rem / @baseFont);
+      min-width: (240rem / @baseFont);
       font-size: (1rem / @baseFont);
       margin-right: (25rem / @baseFont);
     }
     .search-button {
       height: 90%;
       max-height: (45rem / @baseFont);
+      min-width: (140rem / @baseFont);
       text-align: center;
       border-radius: 10%;
       text-align: center;
