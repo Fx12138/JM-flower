@@ -55,7 +55,7 @@ export default {
 .box {
   padding: 0 (20rem / @baseFont);
   width: 95%;
-  height: (60rem / @baseFont);
+  min-height: (60rem / @baseFont);
   display: flex;
   align-items: center;
   margin-bottom: (10rem / @baseFont);

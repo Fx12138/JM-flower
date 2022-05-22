@@ -67,7 +67,6 @@
               <div class="form-floating mb-3">
                 <input
                   v-model="newRoomName"
-                  type="email"
                   class="form-control"
                   id="roomNameInput"
                   placeholder="请输入房间名"
@@ -77,7 +76,6 @@
               <div class="form-floating mb-3">
                 <input
                   v-model="newRoomPassword"
-                  type="email"
                   class="form-control"
                   id="passwordInput"
                   placeholder="请输入房间密码"
@@ -137,7 +135,6 @@
               <div class="form-floating mb-3">
                 <input
                   v-model="inRoomPassword"
-                  type="email"
                   class="form-control"
                   id="floatingInput"
                   placeholder="请输入房间密码"
@@ -359,6 +356,7 @@ export default {
   display: flex;
   // flex-wrap: wrap;
   flex-direction: column;
+  align-items: center;
   border-radius: (20rem / @baseFont);
   position: relative;
   font-size: (1rem / @baseFont);
@@ -401,7 +399,7 @@ export default {
   .room-items-box {
     flex: 7;
     // padding: (3rem / @baseFont) (10rem / @baseFont);
-    width: 100%;
+    width: 90%;
     overflow: auto;
     display: flex;
     justify-content: center;
@@ -457,5 +455,21 @@ export default {
     height: (80rem / @baseFont);
     background-color: white;
   }
+}
+#roomModal {
+  display: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+}
+#passwordModal {
+  display: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
 }
 </style>

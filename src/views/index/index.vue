@@ -105,7 +105,7 @@ body {
     margin-bottom: (10rem / @baseFont);
   }
   .room-list {
-    width: 90%;
+    width: 70%;
     height: 70%;
     display: flex;
     align-items: center;
