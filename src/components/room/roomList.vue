@@ -378,7 +378,7 @@ export default {
       width: 16%;
       max-height: (45rem / @baseFont);
       min-width: (240rem / @baseFont);
-      font-size: (1rem / @baseFont);
+      font-size: (20rem / @baseFont);
       margin-right: (25rem / @baseFont);
     }
     .search-button {
@@ -391,7 +391,7 @@ export default {
       background-color: skyblue;
       border: 0;
       transition: 0.3s;
-      font-size: (1rem / @baseFont);
+      font-size: (20rem / @baseFont);
     }
     .search-button:hover {
       transform: scale(1.1);
