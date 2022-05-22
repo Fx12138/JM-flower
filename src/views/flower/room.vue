@@ -508,6 +508,10 @@ export default {
     this.getUserInfo();
   },
   mounted() {
+    this.coin1 = require("@/assets/images/coin_1.jpg");
+    this.coin2 = require("@/assets/images/coin_2.jpg");
+    this.coin5 = require("@/assets/images/coin_5.jpg");
+    this.coin10 = require("@/assets/images/coin_10.jpg");
     this.coin20 = require("@/assets/images/coin_20.jpg");
 
     this.sendAudio = document.getElementById("sendAudio");
@@ -732,7 +736,9 @@ export default {
     },
 
     //跟注
-    follow(room) {
+    follow(data) {
+      let room = data.room;
+      let coinNum = data.coinNum;
       //播放音效
       this.sendAudio.src = this.optionAudioList.follow;
       this.sendAudio.load();
@@ -785,7 +791,31 @@ export default {
           transY = randomNum(0, 6);
           break;
       }
-      img.src = this.coin20;
+      switch (coinNum) {
+        case null:
+          console.log("只跟注");
+
+          img.src = this.coin2;
+          break;
+        case 1:
+          img.src = this.coin1;
+          break;
+        case 2:
+          img.src = this.coin2;
+          break;
+        case 5:
+          img.src = this.coin5;
+          break;
+        case 10:
+          img.src = this.coin10;
+          break;
+        case 20:
+          img.src = this.coin20;
+          break;
+        default:
+          img.src = this.coin2;
+      }
+      // img.src = this.coin20;
       img.style.width = "1rem";
       img.style.height = "1rem";
       img.style.position = "absolute";

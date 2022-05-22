@@ -17,7 +17,7 @@
         :class="{
           unClickable:
             roomInfo.bottomCoin > 2 ||
-            (loginUser.cardStatus && roomInfo.bottomCoin > 1),
+            (loginUser.cardStatus && roomInfo.bottomCoin > 2.5),
         }"
       >
         <img src="@/assets/images/coin_2.jpg" alt="" />
