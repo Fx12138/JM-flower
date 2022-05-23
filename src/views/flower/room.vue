@@ -607,22 +607,6 @@ export default {
       this.initData();
       this.$socket.emit("sendPokers", { roomId: this.roomId });
     },
-    //跟注
-    follow(coinNum) {
-      this.$socket.emit("follow", {
-        roomId: this.roomId,
-        flowerUserList: this.flowerUserList,
-        coinNum,
-      });
-    },
-
-    //看牌
-    seeCard() {
-      this.$socket.emit("seeCard", {
-        roomId: this.roomId,
-        activeUserId: this.roomInfo.activeUser.id,
-      });
-    },
 
     //弃牌
     loseCard() {
@@ -633,13 +617,6 @@ export default {
       });
     },
 
-    //选择一个进行比牌
-    chooseOne() {
-      this.initData();
-      this.roomInfo.status = 2;
-      this.$socket.emit("chooseStatus", { roomId: this.roomId });
-    },
-
     //信息提示(包括用户进入和退出,比牌结果,当前局结束提示)
     showMessage(mes) {
       this.alertMessage = mes;
@@ -647,18 +624,6 @@ export default {
       setTimeout(() => {
         this.showAlertMessage = false;
       }, 3000);
-    },
-
-    //比牌
-    contrast(contrastinger, contrasteder) {
-      contrastinger = this.flowerUserList.filter((user) => {
-        return user.username == contrastinger.username;
-      })[0];
-      this.$socket.emit("contrastResult", {
-        roomId: this.roomId,
-        contrastinger,
-        contrasteder,
-      });
     },
   },
   sockets: {
@@ -792,10 +757,28 @@ export default {
           break;
       }
       switch (coinNum) {
-        case null:
-          console.log("只跟注");
+        case undefined:
+          console.log(room.roomInfo.bottomCoin);
 
-          img.src = this.coin2;
+          switch (room.roomInfo.bottomCoin) {
+            case 1:
+              img.src = this.coin1;
+              break;
+            case 2.5:
+              img.src = this.coin2;
+              break;
+            case 5:
+              img.src = this.coin5;
+              break;
+            case 10:
+              img.src = this.coin10;
+              break;
+            case 20:
+              img.src = this.coin20;
+              break;
+            default:
+              img.src = this.coin2;
+          }
           break;
         case 1:
           img.src = this.coin1;
@@ -833,22 +816,16 @@ export default {
       let curUser = room.flowerUserList.filter((user) => {
         return user.username == this.loginUser.username;
       })[0];
-      this.loginUser.id = curUser.id;
       this.loginUser.coin = curUser.coin;
       this.loginUser.isDown = curUser.isDown;
-      this.loginUser.cardStatus = curUser.cardStatus;
-      this.loginUser.liveStatus = curUser.liveStatus;
-      let userNumber = room.flowerUserList.length;
       //获取所有用户信息
-      for (let i = 0; i < room.flowerUserList.length - 1; i++) {
+      for (let i = 0; i < room.flowerUserList.length; i++) {
         let user = room.flowerUserList.filter((user) => {
-          return user.id == (this.loginUser.id + i + 1) % userNumber;
+          return user.username == this.flowerUserList[i].username;
         })[0];
         if (user) {
           this.flowerUserList[i].coin = user.coin;
           this.flowerUserList[i].isDown = user.isDown;
-          this.flowerUserList[i].cardStatus = user.cardStatus;
-          this.flowerUserList[i].liveStatus = user.liveStatus;
         }
       }
     },
@@ -869,22 +846,14 @@ export default {
       let curUser = data.room.flowerUserList.filter((user) => {
         return user.username == this.loginUser.username;
       })[0];
-      this.loginUser.id = curUser.id;
-      this.loginUser.coin = curUser.coin;
-      this.loginUser.isDown = curUser.isDown;
       this.loginUser.cardStatus = curUser.cardStatus;
-      this.loginUser.liveStatus = curUser.liveStatus;
-      let userNumber = data.room.flowerUserList.length;
       //获取所有用户信息
-      for (let i = 0; i < data.room.flowerUserList.length - 1; i++) {
+      for (let i = 0; i < data.room.flowerUserList.length; i++) {
         let user = data.room.flowerUserList.filter((user) => {
-          return user.id == (this.loginUser.id + i + 1) % userNumber;
+          return user.username == this.flowerUserList[i].username;
         })[0];
         if (user) {
-          this.flowerUserList[i].coin = user.coin;
-          this.flowerUserList[i].isDown = user.isDown;
           this.flowerUserList[i].cardStatus = user.cardStatus;
-          this.flowerUserList[i].liveStatus = user.liveStatus;
         }
       }
     },
@@ -982,6 +951,20 @@ export default {
 
     //比牌结果
     contrastResult(data) {
+      //发起比牌的要减,房间的钱要加
+      if (
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrastinger.username;
+        })[0]
+      ) {
+        this.flowerUserList.filter((user) => {
+          return user.username == data.contrastinger.username;
+        })[0].coin = data.contrastinger.coin;
+      } else {
+        this.loginUser.coin = data.contrastinger.coin;
+      }
+      this.roomInfo.coinPool = data.room.roomInfo.coinPool;
+
       //传入比牌动效组件比牌结果
       if (this.contrastinger.username == data.loser.username) {
         //发起比牌的用户输了
@@ -1033,8 +1016,6 @@ export default {
         }
         this.contrasteder.isLoser = null;
         this.contrastinger.isLoser = null;
-
-        // this.showMessage(data.winner.username + "赢了");
       }, 5000);
     },
 

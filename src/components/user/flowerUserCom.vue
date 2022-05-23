@@ -41,8 +41,7 @@
           v-if="
             (userInfo.cardStatus && loginUser.username === userInfo.username) ||
             (userInfo.showCardsIdList.indexOf(loginUser.username) != -1 &&
-              loginUser.username != userInfo.username) ||
-            (loginUser.username === userInfo.username && !userInfo.liveStatus)
+              loginUser.username != userInfo.username)
           "
           class="user-card"
         >
@@ -60,6 +59,7 @@
             :class="userInfo.liveStatus ? '' : 'lose'"
           ></div>
         </div>
+        <div class="user-isdown">已下注:{{ userInfo.isDown }}</div>
         <!-- 计时器插槽 -->
         <slot name="countTime"></slot>
       </div>
@@ -130,6 +130,8 @@ export default {
     init() {},
 
     contrast(contrastinger, contrasteder) {
+      console.log("触发了比牌");
+
       //将所有的组件的房间信息置为等待比牌的3
       this.$socket.emit("waitContrastResult", {
         roomId: this.roomInfo.roomId,
@@ -168,13 +170,13 @@ export default {
   justify-content: center;
   align-items: center;
   width: (360rem / @baseFont);
-  height: (150rem / @baseFont);
+  height: (170rem / @baseFont);
   box-sizing: content-box;
   border-radius: (20rem / @baseFont);
 
   .content {
     width: (350rem / @baseFont);
-    height: (140rem / @baseFont);
+    height: (165rem / @baseFont);
     border-radius: (20rem / @baseFont);
     display: flex;
     flex-direction: row;
@@ -276,6 +278,12 @@ export default {
           height: (130rem / @baseFont);
           border-radius: (15rem / @baseFont);
         }
+      }
+      //用户已下注
+      .user-isdown {
+        flex: 1;
+        text-align: center;
+        color: white;
       }
       //未看牌样式
       .nosee {

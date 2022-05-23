@@ -171,7 +171,7 @@ export function contrastSameType(cardType, cardList1, cardList2) {
             }
         //顺子
         case 3:
-            if (getMinCard(cardList1).power > getMaxCard(cardList2)) {
+            if (getMaxCard(cardList1).power > getMaxCard(cardList2).power) {
                 return true
             } else {
                 return false
